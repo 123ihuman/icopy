@@ -975,7 +975,7 @@ body.writing canvas.ink{ cursor: none; }
   .nav-btn{width:36px;height:32px;font-size:16px;}
   #pageInfo{font-size:11px;min-width:100px;}
 
-  /* panels become bottom sheets */
+   /* panels become bottom sheets */
   .panel-card{
     top:auto;bottom:0;right:0;left:0;
     width:100%;max-height:82vh;
@@ -987,12 +987,6 @@ body.writing canvas.ink{ cursor: none; }
   }
   #colorPanel.open .panel-card{transform:translateY(0);}
   .color-grid{grid-template-columns:repeat(auto-fill, minmax(46px, 1fr));gap:8px;}
-
-  .shelf-grid{grid-template-columns:repeat(2, 1fr);gap:10px;}
-  .shelf-card{padding:18px 16px;}
-}
-  .shelf-grid{grid-template-columns:repeat(2, 1fr);gap:10px;}
-  .shelf-card{padding:18px 16px;}
 }
 
 /* ============================================================
@@ -1044,7 +1038,82 @@ body.writing canvas.ink{ cursor: none; }
     right:calc(12px + env(safe-area-inset-right));
   }
 }
-</style>
+/* ============================================================
+   MOBILE — make the almirah fill the phone screen
+   Placed last so it wins over earlier mobile rules.
+============================================================ */
+@media (max-width: 720px){
+
+  /* ---- outer frame hugs the screen edges and stretches ---- */
+  .almirah-outer{
+    max-width:none;
+    margin:6px !important;
+    margin-bottom:14px !important;
+    padding:10px;
+    border-radius:14px;
+
+    /* fill everything below the library header */
+    min-height:calc(100dvh - 130px - env(safe-area-inset-top));
+    display:flex;
+    flex-direction:column;
+  }
+  .almirah-outer::before{inset:5px;border-radius:10px;}
+
+  /* ---- thinner cabinet top + handle ---- */
+  .almirah-top{
+    height:16px;
+    margin:-3px -3px 8px;
+    border-radius:10px 10px 0 0;
+    flex:0 0 auto;
+  }
+  .almirah-top::after{width:36px;height:5px;border-radius:4px;}
+
+  /* ---- the cabinet itself stretches to fill the frame ---- */
+  .almirah{
+    flex:1;
+    padding:0 8px;
+    border-radius:8px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---- shelf planks stretch, books sit on top ---- */
+  .shelf-row{
+    flex:1;
+    min-height:140px;
+    padding:14px 4px 6px;
+    gap:8px;
+    border-bottom-width:10px;
+  }
+  .shelf-row::after{height:10px;bottom:-10px;}
+
+  /* ---- books auto-size in a grid and fill the row ---- */
+  .shelf-books{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(95px, 1fr));
+    gap:10px;
+    align-items:end;
+    width:100%;
+  }
+
+  .book{
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:116/160;
+  }
+  .book .cover-label{
+    font-size:11px;
+    padding:5px 6px 5px 16px;
+  }
+
+  .add-book{
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:116/160;
+    font-size:11px;
+  }
+  .add-book span{font-size:22px;}
+}
 </style>
 </head>
 <body>
