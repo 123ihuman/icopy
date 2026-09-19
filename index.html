@@ -34,8 +34,22 @@ button,input,select{font-family:inherit;}
   background:linear-gradient(180deg,rgba(20,18,14,.98),rgba(20,18,14,.75));
   backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);
 }
-.brand{font-size:19px;font-weight:700;letter-spacing:.3px;
-  background:linear-gradient(90deg,#ffd89b,#c98b3a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand{font-size:19px;font-weight:700;letter-spacing:.3px;min-width:0;max-width:220px;}
+.brand .brand-name{
+  display:block;
+  background:linear-gradient(90deg,#ffd89b,#c98b3a);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+  cursor:pointer;
+  padding:2px 6px;margin:-2px -6px;border-radius:6px;
+  transition:box-shadow .15s, transform .1s;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  outline:none;
+}
+.brand .brand-name:hover{
+  box-shadow:0 0 0 3px rgba(201,139,58,.18);
+}
+.brand .brand-name:active{transform:scale(.97);}
 .brand small{display:block;font-size:11px;font-weight:400;color:#8b8175;letter-spacing:.6px;
   -webkit-text-fill-color:#8b8175;background:none;}
 .lib-head .spacer{flex:1;}
@@ -77,7 +91,6 @@ button,input,select{font-family:inherit;}
 .search-result .st-sub{font-size:11px;color:#8b8175;}
 .search-result .st-sub b{color:#c98b3a;font-weight:600;}
 .search-empty{padding:18px 14px;text-align:center;color:#8b8175;font-size:12px;}
-</style>
 .btn{
   border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;
   background:rgba(255,255,255,.08);color:#e9e3d8;cursor:pointer;transition:.18s;
@@ -90,15 +103,76 @@ button,input,select{font-family:inherit;}
 .btn.danger{background:rgba(220,70,70,.18);color:#ff9a9a;border-color:rgba(220,70,70,.3);}
 
 .almirah-outer{
+  --wood-light:#96622f; --wood-mid:#7a4a21; --wood-dark:#5f3817; --wood-deeper:#48280f;
+  --shelf-hi:#8a5a28;   --shelf-lo:#4a2c14;
+  --inner-top:#221507;  --inner-mid:#150d05; --inner-bot:#0d0803;
+  --top-from:#b07a3e;   --top-to:#7a4a21;
+  --handle-from:#e0b877;--handle-to:#8a5a24;
+  --sheen:rgba(255,255,255,.03);
   max-width:1080px;margin:22px auto 60px;padding:16px;position:relative;
   border-radius:20px;
   background:
-    repeating-linear-gradient(92deg, rgba(0,0,0,.07) 0 3px, rgba(255,255,255,.03) 3px 7px),
-    linear-gradient(180deg,#96622f,#7a4a21 12%,#5f3817 60%,#48280f);
+    repeating-linear-gradient(92deg, rgba(0,0,0,.07) 0 3px, var(--sheen) 3px 7px),
+    linear-gradient(180deg,var(--wood-light),var(--wood-mid) 12%,var(--wood-dark) 60%,var(--wood-deeper));
   box-shadow:
     0 40px 80px rgba(0,0,0,.65),
     0 4px 0 rgba(255,255,255,.08) inset,
     0 -6px 20px rgba(0,0,0,.5) inset;
+  transition:background .35s ease, box-shadow .35s ease;
+}
+.shelf-wood{
+  --wood-light:#96622f; --wood-mid:#7a4a21; --wood-dark:#5f3817; --wood-deeper:#48280f;
+  --shelf-hi:#8a5a28;   --shelf-lo:#4a2c14;
+  --inner-top:#221507;  --inner-mid:#150d05; --inner-bot:#0d0803;
+  --top-from:#b07a3e;   --top-to:#7a4a21;
+  --handle-from:#e0b877;--handle-to:#8a5a24;
+  --sheen:rgba(255,255,255,.03);
+}
+.shelf-mahogany{
+  --wood-light:#6b1f1f; --wood-mid:#4f1414; --wood-dark:#3a0d0d; --wood-deeper:#2a0808;
+  --shelf-hi:#7a2a2a;   --shelf-lo:#2f0a0a;
+  --inner-top:#2a0a0a;  --inner-mid:#1a0505; --inner-bot:#0f0202;
+  --top-from:#8a3535;   --top-to:#4f1414;
+  --handle-from:#d4a878;--handle-to:#6b3a15;
+}
+.shelf-teak{
+  --wood-light:#c99a5b; --wood-mid:#b08048; --wood-dark:#8a5f2e; --wood-deeper:#6d4a23;
+  --shelf-hi:#c19a6b;   --shelf-lo:#7a5228;
+  --inner-top:#3d2a15;  --inner-mid:#2a1c0e; --inner-bot:#1c1206;
+  --top-from:#d4a86a;   --top-to:#8a5f2e;
+  --handle-from:#f0d29a;--handle-to:#a87838;
+}
+.shelf-oak{
+  --wood-light:#8a6b3d; --wood-mid:#6b5028; --wood-dark:#4a3719; --wood-deeper:#2e230f;
+  --shelf-hi:#7a5a30;   --shelf-lo:#3a2912;
+  --inner-top:#2a1e0e;  --inner-mid:#1a1208; --inner-bot:#0f0a04;
+  --top-from:#9a7a4a;   --top-to:#4a3719;
+  --handle-from:#c9a874;--handle-to:#5a4218;
+}
+.shelf-steel{
+  --wood-light:#6b7280; --wood-mid:#4b5563; --wood-dark:#374151; --wood-deeper:#1f2937;
+  --shelf-hi:#9ca3af;   --shelf-lo:#374151;
+  --inner-top:#111827;  --inner-mid:#0a0f18; --inner-bot:#050810;
+  --top-from:#9ca3af;   --top-to:#4b5563;
+  --handle-from:#e5e7eb;--handle-to:#6b7280;
+  --sheen:rgba(255,255,255,.09);
+}
+.shelf-white{
+  --wood-light:#f5f5f4; --wood-mid:#e7e5e4; --wood-dark:#d6d3d1; --wood-deeper:#a8a29e;
+  --shelf-hi:#e7e5e4;   --shelf-lo:#a8a29e;
+  --inner-top:#fafaf9;  --inner-mid:#f5f5f4; --inner-bot:#e7e5e4;
+  --top-from:#ffffff;   --top-to:#d6d3d1;
+  --handle-from:#a8a29e;--handle-to:#78716c;
+  --sheen:rgba(0,0,0,.03);
+}
+.shelf-glass{
+  --wood-light:rgba(255,255,255,.10); --wood-mid:rgba(255,255,255,.05);
+  --wood-dark:rgba(255,255,255,.02);  --wood-deeper:rgba(0,0,0,.35);
+  --shelf-hi:rgba(255,255,255,.15);   --shelf-lo:rgba(255,255,255,.05);
+  --inner-top:rgba(255,255,255,.06);  --inner-mid:rgba(255,255,255,.03); --inner-bot:rgba(0,0,0,.25);
+  --top-from:rgba(255,255,255,.20);   --top-to:rgba(255,255,255,.06);
+  --handle-from:rgba(255,255,255,.55);--handle-to:rgba(255,255,255,.15);
+  --sheen:rgba(255,255,255,.07);
 }
 .almirah-outer::before{
   content:'';position:absolute;inset:8px;border-radius:14px;
@@ -107,32 +181,92 @@ button,input,select{font-family:inherit;}
 }
 .almirah-top{
   height:26px;border-radius:12px 12px 0 0;margin:-4px -4px 10px;
-  background:linear-gradient(180deg,#b07a3e,#7a4a21);
+  background:linear-gradient(180deg,var(--top-from),var(--top-to));
   box-shadow:0 6px 14px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.18) inset;
   position:relative;
+  transition:background .35s ease;
 }
 .almirah-top::after{
   content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:60px;height:8px;border-radius:6px;background:linear-gradient(180deg,#e0b877,#8a5a24);
+  width:60px;height:8px;border-radius:6px;
+  background:linear-gradient(180deg,var(--handle-from),var(--handle-to));
   box-shadow:0 2px 4px rgba(0,0,0,.5) inset;
+  transition:background .35s ease;
 }
 .almirah{
-  background:linear-gradient(180deg,#221507,#150d05 60%,#0d0803);
+  background:linear-gradient(180deg,var(--inner-top),var(--inner-mid) 60%,var(--inner-bot));
   border-radius:10px;padding:0 16px;
   box-shadow:0 0 60px rgba(0,0,0,.9) inset, 0 0 0 3px rgba(0,0,0,.35) inset;
+  transition:background .35s ease;
 }
 .shelf-row{
   display:flex;align-items:flex-end;gap:16px;
   padding:24px 12px 12px;position:relative;
-  border-bottom:13px solid #4a2c14;
+  border-bottom:13px solid var(--shelf-lo);
   box-shadow:0 14px 22px rgba(0,0,0,.55);
+  transition:border-color .35s ease;
 }
-.shelf-row:last-child{border-bottom-color:#3a2210;}
+.shelf-row:last-child{border-bottom-color:var(--shelf-lo);}
 .shelf-row::after{
   content:'';position:absolute;left:0;right:0;bottom:-13px;height:13px;
-  background:linear-gradient(180deg,#8a5a28,#4a2c14);
+  background:linear-gradient(180deg,var(--shelf-hi),var(--shelf-lo));
   border-radius:0 0 3px 3px;
+  transition:background .35s ease;
 }
+
+/* ---- shelf picker modal ---- */
+#shelfModal{
+  position:fixed;inset:0;z-index:1100;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:20px;
+}
+#shelfModal.open{display:flex;}
+.shelf-card{
+  width:100%;max-width:520px;max-height:88vh;overflow-y:auto;
+  background:linear-gradient(180deg,#241f18,#1a1610);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;padding:22px;color:#f0e9db;
+  box-shadow:0 30px 70px rgba(0,0,0,.8);
+}
+.shelf-card h3{margin:0 0 6px;font-size:17px;}
+.shelf-card p{margin:0 0 18px;font-size:13px;color:#a89e8f;}
+.shelf-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));
+  gap:12px;margin-bottom:18px;
+}
+.shelf-tile{
+  position:relative;aspect-ratio:1/1.1;
+  border-radius:12px;cursor:pointer;overflow:hidden;
+  border:2px solid rgba(255,255,255,.10);
+  transition:transform .15s,border-color .15s,box-shadow .15s;
+  display:flex;flex-direction:column;
+}
+.shelf-tile:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.32);}
+.shelf-tile.on{
+  border-color:#c98b3a;
+  box-shadow:0 0 0 2px rgba(201,139,58,.55),0 8px 22px rgba(201,139,58,.35);
+}
+.shelf-preview{
+  flex:1;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--wood-light),var(--wood-mid));
+}
+.shelf-preview::before{
+  content:'';position:absolute;left:8%;right:8%;bottom:18%;height:14%;
+  background:linear-gradient(180deg,var(--shelf-hi),var(--shelf-lo));
+  border-radius:2px;box-shadow:0 4px 8px rgba(0,0,0,.5);
+}
+.shelf-preview::after{
+  content:'';position:absolute;left:14%;right:14%;bottom:32%;height:26%;
+  background:linear-gradient(180deg,var(--wood-light),var(--wood-mid));
+  border-radius:2px;opacity:.85;
+}
+.shelf-label{
+  padding:8px 10px;font-size:12px;font-weight:600;text-align:center;
+  background:rgba(0,0,0,.55);color:#f0e9db;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.shelf-tile.on .shelf-label{color:#ffd89b;}
 .shelf-books{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;flex:1;}
 
 /* --- book on shelf --- */
@@ -671,15 +805,100 @@ body.writing canvas.ink{ cursor: none; }
 
 /* Make sure the drawer button looks the same in the library header */
 .lib-head .tb{height:36px;}
+
+/* ============================================================
+   SLIDE-IN PANEL (page colour)
+============================================================ */
+#colorPanel{position:fixed;inset:0;z-index:950;display:none;}
+#colorPanel.open{display:block;}
+.panel-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  opacity:0;transition:opacity .25s;
+}
+#colorPanel.open .panel-backdrop{opacity:1;}
+.panel-card{
+  position:absolute;top:0;right:0;bottom:0;
+  width:min(360px, 88vw);
+  background:linear-gradient(180deg,#241f18,#1a1610);
+  border-left:1px solid rgba(255,255,255,.08);
+  box-shadow:-20px 0 50px rgba(0,0,0,.7);
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  padding-top:calc(20px + env(safe-area-inset-top));
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.2,.8,.3,1);
+  overflow:hidden;
+}
+#colorPanel.open .panel-card{transform:translateX(0);}
+.panel-head{
+  display:flex;align-items:center;gap:12px;flex:0 0 auto;
+  margin-bottom:14px;padding-bottom:14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.panel-title{
+  flex:1;font-size:15px;font-weight:700;color:#f0e9db;letter-spacing:.3px;
+}
+.panel-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  color:#ddd6c9;font-size:14px;cursor:pointer;transition:.15s;
+}
+.panel-close:hover{background:rgba(255,255,255,.14);}
+.panel-body{
+  flex:1;overflow-y:auto;padding-right:4px;
+}
+.panel-group{margin-bottom:20px;}
+.panel-group:last-child{margin-bottom:6px;}
+.panel-group-title{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.2px;color:#8b8175;margin:0 0 10px 2px;
+}
+.color-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(52px,1fr));
+  gap:10px;
+}
+.color-tile{
+  position:relative;aspect-ratio:1/1;border-radius:12px;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.14);
+  box-shadow:0 4px 10px rgba(0,0,0,.35),
+             inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+}
+.color-tile:hover{
+  transform:translateY(-3px) scale(1.04);
+  border-color:rgba(255,255,255,.4);
+  box-shadow:0 10px 20px rgba(0,0,0,.5),
+             inset 0 1px 0 rgba(255,255,255,.4);
+}
+.color-tile.on{
+  border-color:#c98b3a;
+  box-shadow:0 0 0 2px rgba(201,139,58,.55),
+             0 6px 16px rgba(201,139,58,.35),
+             inset 0 1px 0 rgba(255,255,255,.4);
+  transform:scale(1.02);
+}
+.color-tile.on::after{
+  content:'✓';
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;
+  color:rgba(0,0,0,.55);
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  pointer-events:none;
+}
+</style>
 </head>
 <body>
 
 <!-- ================= LIBRARY ================= -->
 <div id="library" class="screen active">
   <div class="lib-head">
-    <div class="brand">My Almirah<small>Your notebooks, kept safe</small></div>
+    <div class="brand"><span class="brand-name" id="brandName" title="Click to rename">My Almirah</span><small>Your notebooks, kept safe</small></div>
 <div class="spacer"></div>
 <input type="search" id="libSearch" placeholder="Search notebooks or typed text…">
+<button class="tb" id="shelfBtn" title="Change almirah style">🪵</button>
 <button class="btn primary" id="newBookBtn">+ New Notebook</button>
 <button class="tb" id="drawerBtnLib" title="Menu">⋮</button>
 <div id="searchResults"></div>
@@ -720,8 +939,8 @@ body.writing canvas.ink{ cursor: none; }
   <option value="upsc-2page">UPSC answer sheet (2 page)</option>
   <option value="omr">OMR practice sheet</option>
 </select>
-    <div class="sep"></div>
-    <div id="pageColors"></div>
+        <div class="sep"></div>
+    <button class="tb" id="pageColorBtn" title="Page colour">🎨</button>
     <div class="sep"></div>
     <button class="tb small" id="modeBtn" title="Page view mode">2 PAGE</button>
     <button class="tb" id="zoomOut" title="Zoom out">−</button>
@@ -777,6 +996,28 @@ body.writing canvas.ink{ cursor: none; }
       <button class="btn danger" id="mDelete">Delete</button>
       <button class="btn primary" id="mClose">Done</button>
     </div>
+  </div>
+</div>
+
+<!-- ================= PAGE COLOUR PANEL ================= -->
+<div id="colorPanel">
+  <div class="panel-backdrop" id="colorPanelBackdrop"></div>
+  <aside class="panel-card">
+    <div class="panel-head">
+      <div class="panel-title">🎨 Page Colour</div>
+      <button class="panel-close" id="colorPanelClose" aria-label="Close">✕</button>
+    </div>
+    <div class="panel-body" id="colorPanelBody"></div>
+  </aside>
+</div>
+
+<!-- ================= SHELF STYLE PICKER ================= -->
+<div id="shelfModal">
+  <div class="shelf-card">
+    <h3>🪵 Almirah Style</h3>
+    <p>Pick the look of your bookshelf.</p>
+    <div class="shelf-grid" id="shelfGrid"></div>
+    <button class="help-close" id="shelfClose">Done</button>
   </div>
 </div>
 
@@ -1009,7 +1250,8 @@ const state = {
   sizes: { ...DEFAULT_SIZES },
   appMode: false,
   auto: false, autoSpeed: 7,
-  pw: 400, ph: 560, spine: 6
+  pw: 400, ph: 560, spine: 6,
+  shelfStyle: 'wood'
 };
 
 /* ============================================================
@@ -1020,7 +1262,8 @@ function persist(){
     localStorage.setItem(KEY, JSON.stringify({
       v: 1,
       notebooks: state.notebooks,
-      last: state.currentId
+      last: state.currentId,
+      shelfStyle: state.shelfStyle
     }));
   }catch(e){
     console.warn('Save failed:', e);
@@ -1065,6 +1308,7 @@ function loadAll(){
       const d = JSON.parse(raw);
       state.notebooks = d.notebooks || [];
       state.currentId = d.last || null;
+      state.shelfStyle = d.shelfStyle || 'wood';
     }
   }catch(e){ console.warn(e); }
 
@@ -1114,6 +1358,108 @@ function renderLibrary(){
     wrap.appendChild(row);
   }
 }
+/* ============================================================
+   ALMIRAH NAME
+============================================================ */
+const BRAND_KEY = 'realnotebook.almirahname.v1';
+const DEFAULT_BRAND = 'My Almirah';
+
+function getAlmirahName(){
+  try { return localStorage.getItem(BRAND_KEY) || DEFAULT_BRAND; }
+  catch(e){ return DEFAULT_BRAND; }
+}
+function setAlmirahName(name){
+  try {
+    if (name) localStorage.setItem(BRAND_KEY, name);
+    else localStorage.removeItem(BRAND_KEY);
+  }catch(e){}
+  applyAlmirahName();
+}
+function applyAlmirahName(){
+  const el = $('#brandName');
+  if (!el) return;
+  const n = getAlmirahName();
+  el.textContent = n;
+  el.title = 'Click to rename — currently "' + n + '"';
+}
+
+$('#brandName').addEventListener('click', () => {
+  const current = getAlmirahName();
+  const entered = prompt('Name your almirah:', current);
+  if (entered === null) return;
+  const trimmed = entered.trim().slice(0, 24);
+  setAlmirahName(trimmed);
+  if (trimmed){
+    toast('Renamed to "' + trimmed + '"');
+  } else {
+    toast('Reset to "My Almirah"');
+  }
+});
+/* ============================================================
+   ALMIRAH SHELF STYLE
+============================================================ */
+const SHELF_STYLES = [
+  { id:'wood',     name:'Classic Wood',  cls:'shelf-wood' },
+  { id:'mahogany', name:'Mahogany',      cls:'shelf-mahogany' },
+  { id:'teak',     name:'Teak',          cls:'shelf-teak' },
+  { id:'oak',      name:'Vintage Oak',   cls:'shelf-oak' },
+  { id:'steel',    name:'Industrial',    cls:'shelf-steel' },
+  { id:'white',    name:'Modern White',  cls:'shelf-white' },
+  { id:'glass',    name:'Glass Cabinet', cls:'shelf-glass' },
+];
+
+function applyShelfStyle(){
+  const outer = document.querySelector('.almirah-outer');
+  if (!outer) return;
+  outer.className = 'almirah-outer shelf-' + state.shelfStyle;
+}
+
+function buildShelfGrid(){
+  const grid = $('#shelfGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  SHELF_STYLES.forEach(s => {
+    const tile = document.createElement('div');
+    tile.className = 'shelf-tile' + (s.id === state.shelfStyle ? ' on' : '');
+
+    const prev = document.createElement('div');
+    prev.className = 'shelf-preview';
+    // apply the same CSS variables so the mini-preview matches the real shelf
+    prev.classList.add(s.cls);
+
+    const label = document.createElement('div');
+    label.className = 'shelf-label';
+    label.textContent = s.name;
+
+    tile.appendChild(prev);
+    tile.appendChild(label);
+
+    tile.addEventListener('click', () => {
+      state.shelfStyle = s.id;
+      applyShelfStyle();
+      grid.querySelectorAll('.shelf-tile').forEach(x => x.classList.remove('on'));
+      tile.classList.add('on');
+      scheduleSave();
+    });
+
+    grid.appendChild(tile);
+  });
+}
+
+function openShelfModal(){
+  buildShelfGrid();
+  $('#shelfModal').classList.add('open');
+}
+function closeShelfModal(){
+  $('#shelfModal').classList.remove('open');
+}
+
+$('#shelfBtn').addEventListener('click', openShelfModal);
+$('#shelfClose').addEventListener('click', closeShelfModal);
+$('#shelfModal').addEventListener('click', e => {
+  if (e.target.id === 'shelfModal') closeShelfModal();
+});
 
 function bookEl(nb){
   const el = document.createElement('div');
@@ -1933,8 +2279,9 @@ function renderSpread(){
     drawSlot(els.slotLeft, state.current);
     els.slotRight.style.display = 'none';
     els.slotRight.pageIndex = -1;
-  }
+   }
   updatePageInfo();
+  updateUndoButtons();
 }
 
 function updatePageInfo(){
@@ -1984,6 +2331,7 @@ function makeFlipCanvas(pageIndex, pw, ph){
 
 function flipPage(dir){   // dir: +1 forward, -1 backward
   if (animating) return;
+  if (activeTextInput) commitTextInput();
   const nb = currentNotebook();
   if (!nb) return;
   if (dir > 0 && !canNext()) return;
@@ -2360,7 +2708,7 @@ function startTextInput(e, canvas){
   ta.dataset.ny = (y / r.height).toFixed(4);
   ta.dataset.color = state.textColor;
   ta.dataset.font  = state.textFont;
-  ta.dataset.size  = state.sizes.text || 22;
+  ta.dataset.size  = state.sizes.text || 30;
 
   document.body.appendChild(ta);
   ta.focus();
@@ -2576,28 +2924,74 @@ function buildFontOptions(){
   sel.value = state.textFont;
 }
 
+const PAGE_COLOR_GROUPS = [
+  { name:'Paper',       colors:['#ffffff','#fffdf6','#f7f4ec','#fdf8e8','#f0ece1'] },
+  { name:'Warm',        colors:['#fef3c7','#fde68a','#fef0e6','#fef2f2'] },
+  { name:'Pink & Red',  colors:['#fdf2f2','#fce7f3','#fbcfe8','#fee2e2'] },
+  { name:'Green',       colors:['#eef5f0','#dcfce7','#d1fae5','#ecfccb'] },
+  { name:'Blue',        colors:['#e0f2fe','#dbeafe','#cffafe','#f0f9ff'] },
+  { name:'Purple',      colors:['#ede9fe','#f5f0ff','#f3e8ff'] },
+];
+
 function buildPageColors(){
-  const wrap = $('#pageColors');
-  wrap.innerHTML = '';
+  const body = $('#colorPanelBody');
+  if (!body) return;
+  body.innerHTML = '';
   const nb = currentNotebook();
   if (!nb) return;
-  PAGE_COLORS.forEach(c => {
-    const s = document.createElement('div');
-    s.className = 'swatch' + (c === nb.pageColor ? ' on' : '');
-    s.style.background = c;
-    s.style.width = '18px';
-s.style.height = '18px';
-    s.addEventListener('click', () => {
-      nb.pageColor = c;
-      [...wrap.children].forEach(x => x.classList.remove('on'));
-      s.classList.add('on');
-      renderSpread();
-      if (state.appMode) els.stage.style.background = nb.pageColor;
-      scheduleSave();
+
+  PAGE_COLOR_GROUPS.forEach(group => {
+    const wrap = document.createElement('div');
+    wrap.className = 'panel-group';
+
+    const title = document.createElement('div');
+    title.className = 'panel-group-title';
+    title.textContent = group.name;
+    wrap.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'color-grid';
+
+    group.colors.forEach(c => {
+      const tile = document.createElement('div');
+      tile.className = 'color-tile' + (c === nb.pageColor ? ' on' : '');
+      tile.style.background = c;
+      tile.title = c;
+      tile.addEventListener('click', () => {
+        nb.pageColor = c;
+        grid.querySelectorAll('.color-tile').forEach(x => x.classList.remove('on'));
+        body.querySelectorAll('.color-tile').forEach(x => x.classList.remove('on'));
+        tile.classList.add('on');
+        renderSpread();
+        if (state.appMode) els.stage.style.background = nb.pageColor;
+        scheduleSave();
+      });
+      grid.appendChild(tile);
     });
-    wrap.appendChild(s);          // ← missing before
-  });                              // ← missing before
-}                                  // ← missing before
+
+    wrap.appendChild(grid);
+    body.appendChild(wrap);
+  });
+}
+
+function openColorPanel(){
+  if (!currentNotebook()) return;
+  buildPageColors();
+  $('#colorPanel').classList.add('open');
+}
+function closeColorPanel(){
+  $('#colorPanel').classList.remove('open');
+}
+
+$('#pageColorBtn').addEventListener('click', openColorPanel);
+$('#colorPanelClose').addEventListener('click', closeColorPanel);
+$('#colorPanelBackdrop').addEventListener('click', closeColorPanel);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('#colorPanel').classList.contains('open')){
+    closeColorPanel();
+  }
+});
 
 const PEN_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><polygon points="18,44 22,44 20,58" fill="#c8c8c8"/><polygon points="19,50 21,50 20,58" fill="#4a4a4a"/><rect x="15" y="6" width="10" height="40" rx="2" fill="#2c3e50"/><rect x="15" y="6" width="3" height="40" fill="#3d566e"/><rect x="15" y="34" width="10" height="12" fill="#c98b3a"/><rect x="15" y="4" width="10" height="4" rx="2" fill="#1a252f"/></svg>';
 
@@ -2608,6 +3002,7 @@ const HIGHLIGHTER_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/
 const ERASER_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><rect x="10" y="26" width="20" height="32" rx="3" fill="#f0c8a0"/><rect x="10" y="26" width="20" height="9" fill="#8a6a44"/><rect x="10" y="52" width="20" height="6" fill="#d8b088"/></svg>';
 
 function setTool(t){
+  if (activeTextInput) commitTextInput();
   state.tool = t;
   document.querySelectorAll('.tb.tool').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   $('#sizeRange').value = state.sizes[t] || 22;
@@ -2977,18 +3372,22 @@ $('#drawerHelp').addEventListener('click', () => {
 
 $('#drawerClear').addEventListener('click', () => {
   if (!confirm('Delete ALL notebooks and reset the app? This cannot be undone.')) return;
-  try {
+    try {
     localStorage.removeItem(KEY);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(LOVE_KEY);
+    localStorage.removeItem(BRAND_KEY);
   } catch(e){}
 
   // Wipe in-memory state, then re-seed defaults — no page reload needed
-  state.notebooks = [];
+   state.notebooks = [];
   state.currentId = null;
   state.current = 0;
   state.mode = 'two';
   state.zoom = 1; state.panX = 0; state.panY = 0;
+    state.shelfStyle = 'wood';
+  applyShelfStyle();
+  applyAlmirahName();
 
   loadAll();       // reseeds Physics / Maths / English
   renderLibrary();
@@ -3143,13 +3542,15 @@ function init(){
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => {};
   }
-  applyTransform();
+   applyTransform();
   $('#sizeRange').value = state.sizes.pen;
 
   // restore last opened notebook
   if (state.currentId && state.notebooks.some(n => n.id === state.currentId)){
     // stay on library, just remember
   }
+   applyShelfStyle();
+  applyAlmirahName();
   updateUndoButtons();
 }
 
