@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#14120e">
+<title>Notebook — Real School Notebook</title>
+<style>
+/* ============================================================
+   BASE
+============================================================ */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+  height:100%;margin:0;overflow:hidden;overscroll-behavior:none;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  background:#14120e;color:#e9e3d8;
+  -webkit-user-select:none;user-select:none;
+}
+button,input,select{font-family:inherit;}
+.screen{position:fixed;inset:0;display:none;}
+.screen.active{display:block;}
+.sep{width:1px;height:22px;background:rgba(255,255,255,.12);margin:0 2px;flex:0 0 auto;}
+::-webkit-scrollbar{height:6px;width:6px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px;}
+
+/* ============================================================
+   LIBRARY / ALMIRAH
+============================================================ */
+#library{overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.lib-head{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;padding-top:calc(14px + env(safe-area-inset-top));
+  background:linear-gradient(180deg,rgba(20,18,14,.98),rgba(20,18,14,.75));
+  backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);
+}
+.brand{font-size:19px;font-weight:700;letter-spacing:.3px;
+  background:linear-gradient(90deg,#ffd89b,#c98b3a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand small{display:block;font-size:11px;font-weight:400;color:#8b8175;letter-spacing:.6px;
+  -webkit-text-fill-color:#8b8175;background:none;}
+.lib-head .spacer{flex:1;}
+
+#libSearch{
+  flex:0 1 260px;min-width:120px;
+  padding:9px 12px;border-radius:10px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.10);
+  color:#e9e3d8;font-size:13px;outline:none;
+  transition:.15s;
+}
+#libSearch::placeholder{color:#6f665a;}
+#libSearch:focus{border-color:#c98b3a;background:rgba(0,0,0,.5);}
+
+#searchResults{
+  position:absolute;
+  top:calc(100% - 6px);
+  right:18px;
+  width:min(420px, calc(100vw - 36px));
+  max-height:60vh;overflow-y:auto;
+  background:#1a1610;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+  margin-top:6px;
+  padding:4px 0;
+  box-shadow:0 20px 40px rgba(0,0,0,.7);
+  z-index:60;display:none;
+}
+#searchResults.open{display:block;}
+.search-result{
+  padding:10px 14px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:13px;transition:.12s;
+}
+.search-result:last-child{border-bottom:none;}
+.search-result:hover{background:rgba(201,139,58,.14);}
+.search-result .st-title{font-weight:600;color:#f0e9db;margin-bottom:3px;}
+.search-result .st-sub{font-size:11px;color:#8b8175;}
+.search-result .st-sub b{color:#c98b3a;font-weight:600;}
+.search-empty{padding:18px 14px;text-align:center;color:#8b8175;font-size:12px;}
+</style>
+.btn{
+  border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:600;
+  background:rgba(255,255,255,.08);color:#e9e3d8;cursor:pointer;transition:.18s;
+  border:1px solid rgba(255,255,255,.07);
+}
+.btn:hover{background:rgba(255,255,255,.15);}
+.btn.primary{background:linear-gradient(135deg,#c98b3a,#a86a20);color:#1a1206;border-color:transparent;
+  box-shadow:0 6px 18px rgba(201,139,58,.3);}
+.btn.primary:hover{filter:brightness(1.1);}
+.btn.danger{background:rgba(220,70,70,.18);color:#ff9a9a;border-color:rgba(220,70,70,.3);}
+
+.almirah-outer{
+  max-width:1080px;margin:22px auto 60px;padding:16px;position:relative;
+  border-radius:20px;
+  background:
+    repeating-linear-gradient(92deg, rgba(0,0,0,.07) 0 3px, rgba(255,255,255,.03) 3px 7px),
+    linear-gradient(180deg,#96622f,#7a4a21 12%,#5f3817 60%,#48280f);
+  box-shadow:
+    0 40px 80px rgba(0,0,0,.65),
+    0 4px 0 rgba(255,255,255,.08) inset,
+    0 -6px 20px rgba(0,0,0,.5) inset;
+}
+.almirah-outer::before{
+  content:'';position:absolute;inset:8px;border-radius:14px;
+  border:2px solid rgba(0,0,0,.25);pointer-events:none;
+  box-shadow:0 2px 0 rgba(255,255,255,.08) inset;
+}
+.almirah-top{
+  height:26px;border-radius:12px 12px 0 0;margin:-4px -4px 10px;
+  background:linear-gradient(180deg,#b07a3e,#7a4a21);
+  box-shadow:0 6px 14px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.18) inset;
+  position:relative;
+}
+.almirah-top::after{
+  content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:60px;height:8px;border-radius:6px;background:linear-gradient(180deg,#e0b877,#8a5a24);
+  box-shadow:0 2px 4px rgba(0,0,0,.5) inset;
+}
+.almirah{
+  background:linear-gradient(180deg,#221507,#150d05 60%,#0d0803);
+  border-radius:10px;padding:0 16px;
+  box-shadow:0 0 60px rgba(0,0,0,.9) inset, 0 0 0 3px rgba(0,0,0,.35) inset;
+}
+.shelf-row{
+  display:flex;align-items:flex-end;gap:16px;
+  padding:24px 12px 12px;position:relative;
+  border-bottom:13px solid #4a2c14;
+  box-shadow:0 14px 22px rgba(0,0,0,.55);
+}
+.shelf-row:last-child{border-bottom-color:#3a2210;}
+.shelf-row::after{
+  content:'';position:absolute;left:0;right:0;bottom:-13px;height:13px;
+  background:linear-gradient(180deg,#8a5a28,#4a2c14);
+  border-radius:0 0 3px 3px;
+}
+.shelf-books{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;flex:1;}
+
+/* --- book on shelf --- */
+.book{
+  width:116px;height:160px;border-radius:3px 7px 7px 3px;position:relative;
+  cursor:pointer;flex:0 0 auto;
+  box-shadow:
+    0 12px 20px rgba(0,0,0,.6),
+    -3px 0 8px rgba(0,0,0,.4),
+    inset -8px 0 16px rgba(0,0,0,.28),
+    inset 3px 0 6px rgba(255,255,255,.12);
+  transition:transform .22s cubic-bezier(.2,.8,.3,1),box-shadow .22s;
+  overflow:visible;
+}
+.book:hover{transform:translateY(-12px) rotate(-1.5deg) scale(1.03);
+  box-shadow:0 22px 34px rgba(0,0,0,.7),-3px 0 8px rgba(0,0,0,.4),
+  inset -8px 0 16px rgba(0,0,0,.28),inset 3px 0 6px rgba(255,255,255,.12);}
+.book:active{transform:translateY(-4px) scale(.99);}
+.book .spine{
+  position:absolute;left:0;top:0;bottom:0;width:11px;border-radius:3px 0 0 3px;
+  background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.12) 60%,rgba(255,255,255,.12));
+}
+.book::after{ /* page edges */
+  content:'';position:absolute;right:-4px;top:5px;bottom:5px;width:5px;border-radius:0 5px 5px 0;
+  background:repeating-linear-gradient(180deg,#fdfaf3 0 2px,#d8d2c4 2px 3px);
+  box-shadow:1px 0 4px rgba(0,0,0,.4);
+}
+.book .cover-inner{
+  position:absolute;inset:0;border-radius:3px 7px 7px 3px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.book .cover-inner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:.85;}
+.book .cover-label{
+  position:relative;z-index:2;padding:6px 10px 6px 20px;text-align:center;
+  font-size:12.5px;font-weight:700;line-height:1.25;color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.7);word-break:break-word;
+  max-height:100%;overflow:hidden;
+}
+.book .cover-label::before{
+  content:'';position:absolute;inset:-6px -8px;border-radius:8px;
+  background:rgba(0,0,0,.28);backdrop-filter:blur(1px);z-index:-1;
+  border:1px solid rgba(255,255,255,.16);
+}
+.book .book-menu{
+  position:absolute;top:-9px;right:-9px;width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.2);background:rgba(20,18,14,.92);color:#e9e3d8;
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(.7);transition:.18s;z-index:5;
+}
+.book:hover .book-menu{opacity:1;transform:scale(1);}
+.book-menu:hover{background:#c98b3a;color:#1a1206;}
+
+.add-book{
+  width:116px;height:160px;border-radius:8px;cursor:pointer;
+  border:2px dashed rgba(255,255,255,.16);background:rgba(255,255,255,.03);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:#8b8175;font-size:12px;transition:.2s;box-shadow:none;
+}
+.add-book::after{display:none;}
+.add-book span{font-size:30px;font-weight:200;line-height:1;}
+.add-book:hover{border-color:#c98b3a;color:#e0b877;background:rgba(201,139,58,.08);transform:translateY(-6px);}
+
+/* ============================================================
+   STUDIO
+============================================================ */
+#studio{display:none;flex-direction:column;height:100%;}
+#studio.active{display:flex;}
+
+#topbar{
+  display:flex;align-items:center;gap:6px;padding:8px 10px;
+  padding-top:calc(8px + env(safe-area-inset-top));
+  background:linear-gradient(180deg,#211d17,#171410);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  overflow-x:auto;overflow-y:hidden;flex:0 0 auto;
+  scrollbar-width:none;z-index:30;
+}
+#topbar::-webkit-scrollbar{display:none;}
+.tb{
+  flex:0 0 auto;height:36px;min-width:36px;padding:0 10px;border-radius:9px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);
+  color:#ddd6c9;font-size:15px;cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+}
+.tb:hover{background:rgba(255,255,255,.13);}
+.tb.on{background:linear-gradient(135deg,#c98b3a,#a86a20);color:#1a1206;border-color:transparent;
+  box-shadow:0 3px 12px rgba(201,139,58,.35);}
+.tb.small{font-size:12px;font-weight:600;padding:0 9px;}
+#nbTitle{
+  flex:0 0 auto;min-width:60px;max-width:190px;padding:6px 10px;border-radius:9px;
+  font-size:14px;font-weight:600;color:#f0e9db;outline:none;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;border:1px solid transparent;transition:.15s;
+}
+#nbTitle:hover{background:rgba(255,255,255,.06);}
+#nbTitle:focus{background:rgba(255,255,255,.09);border-color:#c98b3a;white-space:normal;}
+
+#colors{display:flex;gap:5px;flex:0 0 auto;align-items:center;}
+.swatch{
+  width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.18);
+  transition:.15s;flex:0 0 auto;
+}
+.swatch:hover{transform:scale(1.15);}
+.swatch.on{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.25);transform:scale(1.12);}
+
+#sizeRange{width:76px;flex:0 0 auto;accent-color:#c98b3a;height:20px;cursor:pointer;}
+select.tbSel{
+  flex:0 0 auto;height:36px;border-radius:9px;padding:0 8px;font-size:12px;font-weight:600;
+  background:#2a251d;color:#ddd6c9;border:1px solid rgba(255,255,255,.08);cursor:pointer;outline:none;
+}
+#zoomLabel{font-size:11px;color:#8b8175;min-width:38px;text-align:center;flex:0 0 auto;font-variant-numeric:tabular-nums;}
+
+#stage{
+  flex:1;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 25%,#302a22,#15120e 72%);
+  touch-action:none;
+}
+#stage::after{ /* desk vignette */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 140px rgba(0,0,0,.7);
+}
+
+#book{
+  position:relative;transform-origin:center center;
+  will-change:transform;
+  perspective:2400px;
+  transition:width .25s ease;
+}
+#book.two-page{width:calc(var(--pw) * 2 + var(--spine));}
+#book.one-page{width:var(--pw);}
+
+.page-slot{
+  position:absolute;top:0;width:var(--pw);height:var(--ph);
+  border-radius:3px 6px 6px 3px;overflow:hidden;
+  background:#fff;
+  box-shadow:0 18px 40px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.5) inset;
+}
+#slotLeft{left:0;}
+#slotRight{left:calc(var(--pw) + var(--spine));}
+#book.one-page #slotRight{display:none;}
+#book.one-page #flipper{left:0;}
+
+.page-slot canvas{position:absolute;inset:0;display:block;}
+.page-slot canvas.ink{pointer-events:auto;touch-action:none;cursor:crosshair;}
+.page-slot canvas.bg{pointer-events:none;}
+/* inner gutter shading */
+.page-slot .gutter{
+  position:absolute;top:0;bottom:0;width:26px;pointer-events:none;
+}
+#slotLeft .gutter{right:0;background:linear-gradient(270deg,rgba(0,0,0,.18),transparent);}
+#slotRight .gutter{left:0;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent);}
+#book.one-page #slotLeft .gutter{display:none;}
+
+#spineShadow{
+  position:absolute;top:0;height:var(--ph);width:calc(var(--spine) + 20px);
+  left:calc(var(--pw) - 10px);pointer-events:none;z-index:5;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.28) 45%,rgba(0,0,0,.28) 55%,transparent);
+}
+#book.one-page #spineShadow{display:none;}
+
+/* --- flipping leaf --- */
+#flipper{
+  position:absolute;top:0;left:calc(var(--pw) + var(--spine));
+  width:var(--pw);height:var(--ph);
+  transform-origin:left center;
+  transform-style:preserve-3d;
+  z-index:60;pointer-events:none;display:none;
+}
+#flipper .face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  overflow:hidden;background:#fff;
+  border-radius:3px 6px 6px 3px;
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+}
+#flipper .face.back{transform:rotateY(180deg);border-radius:6px 3px 3px 6px;}
+#flipper .face canvas{width:100%;height:100%;display:block;}
+#flipper .face .shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.05) 18%,rgba(255,255,255,.06) 55%,rgba(0,0,0,.12));
+}
+#flipper .face.back .shade{transform:scaleX(-1);}
+
+#bottombar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:8px 12px;padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,#211d17,#171410);
+  border-top:1px solid rgba(255,255,255,.07);
+}
+#pageInfo{font-size:12px;color:#a89e8f;min-width:130px;text-align:center;font-variant-numeric:tabular-nums;}
+.nav-btn{
+  width:40px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.05);color:#ddd6c9;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.nav-btn:hover{background:rgba(255,255,255,.14);}
+.nav-btn:disabled{opacity:.28;cursor:default;}
+
+/* ============================================================
+   APP MODE
+============================================================ */
+body.app-mode #topbar,
+body.app-mode #bottombar{display:none !important;}
+
+body.app-mode,
+body.app-mode html{overflow:hidden;}
+
+body.app-mode #studio{
+  width:100vw;
+  height:100vh;
+  padding:0;
+  margin:0;
+}
+
+body.app-mode #stage{
+  background:#fff;              /* overridden by JS to page colour */
+  padding:0 !important;
+  margin:0 !important;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:stretch;          /* pages stretch to fill */
+  justify-content:center;
+}
+
+body.app-mode #stage::after{display:none !important;}
+
+body.app-mode #book{
+  perspective:2600px;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+body.app-mode .page-slot{
+  border-radius:0 !important;   /* no rounded corners when full bleed */
+  box-shadow:none !important;   /* no drop shadows either */
+}
+
+#exitAppBtn{
+  position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:9999;
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(0,0,0,.15);
+  background:rgba(255,255,255,.85);
+  color:#333;font-size:16px;line-height:1;cursor:pointer;
+  opacity:.35;transition:opacity .25s,transform .25s;
+  display:none;backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+body.app-mode #exitAppBtn{display:flex;align-items:center;justify-content:center;}
+#exitAppBtn:hover{opacity:1;transform:scale(1.06);}
+
+/* ============================================================
+   MODAL
+============================================================ */
+#modal{
+  position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:20px;
+}
+#modal.open{display:flex;}
+.modal-card{
+  width:100%;max-width:400px;max-height:88vh;overflow-y:auto;
+  background:linear-gradient(180deg,#241f18,#1a1610);
+  border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:20px;
+  box-shadow:0 30px 70px rgba(0,0,0,.8);
+}
+.modal-card h3{margin:0 0 16px;font-size:17px;color:#f0e9db;}
+.modal-card label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.8px;
+  color:#8b8175;margin:14px 0 7px;font-weight:600;}
+.modal-card input[type=text]{
+  width:100%;padding:10px 12px;border-radius:10px;font-size:14px;
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);color:#f0e9db;outline:none;
+}
+.modal-card input[type=text]:focus{border-color:#c98b3a;}
+.modal-card input[type=file]{font-size:12px;color:#a89e8f;width:100%;}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;}
+.modal-actions{display:flex;gap:10px;margin-top:22px;}
+.modal-actions .btn{flex:1;text-align:center;justify-content:center;}
+
+/* ============================================================
+   TOAST
+============================================================ */
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+  background:rgba(30,26,20,.96);border:1px solid rgba(255,255,255,.12);
+  color:#f0e9db;padding:10px 20px;border-radius:30px;font-size:13px;
+  opacity:0;pointer-events:none;transition:.3s;z-index:9998;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);backdrop-filter:blur(10px);
+}
+#toast.show{opacity:1;transform:translate(-50%,0);}
+
+/* ============================================================
+   FLOATING PEN (follows finger / cursor)
+============================================================ */
+#floatingPen{
+  position: fixed; left: 0; top: 0;
+  width: 40px; height: 60px;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  transform-origin: 20px 60px;
+  will-change: transform;
+  filter: drop-shadow(2px 3px 2px rgba(0,0,0,.35));
+}
+body.writing #floatingPen{ display: block; }
+body.writing canvas.ink{ cursor: none; }
+
+/* ============================================================
+   TEXT TOOL — on-page typewriter
+============================================================ */
+.text-input{
+  position: fixed;
+  background: transparent;
+  border: 1px dashed rgba(201,139,58,.55);
+  outline: none;
+  resize: none;
+  padding: 4px 6px;
+  z-index: 800;
+  line-height: 1.25;
+  caret-color: #c98b3a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  white-space: pre-wrap;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(201,139,58,.10);
+}
+.tb.tool[data-tool="text"]{
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ============================================================
+   PRINT / SAVE-AS-PDF
+============================================================ */
+#printRoot{ display:none; }
+
+@media print{
+  @page{ size: A4; margin: 6mm; }
+
+  body > *:not(#printRoot){ display: none !important; }
+
+  body, html{
+    background: #fff !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  #printRoot{
+    display: block !important;
+    background: #fff;
+  }
+
+  #printRoot .print-page{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(100vh - 12mm);
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+  }
+  #printRoot .print-page:last-child{
+    page-break-after: auto;
+    break-after: auto;
+  }
+   #printRoot img{
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    object-fit: contain;
+  }
+}
+
+/* ============================================================
+   DRAWER / MENU
+============================================================ */
+#drawer{position:fixed;inset:0;z-index:900;display:none;}
+#drawer.open{display:block;}
+.drawer-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(3px);
+  opacity:0;transition:opacity .25s;
+}
+#drawer.open .drawer-backdrop{opacity:1;}
+.drawer-panel{
+  position:absolute;top:0;right:0;bottom:0;
+  width:min(320px, 82vw);
+  background:linear-gradient(180deg,#221d16,#15120d);
+  border-left:1px solid rgba(255,255,255,.08);
+  box-shadow:-16px 0 40px rgba(0,0,0,.65);
+  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+  padding-top:calc(18px + env(safe-area-inset-top));
+  display:flex;flex-direction:column;gap:6px;
+  overflow-y:auto;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.2,.8,.3,1);
+}
+#drawer.open .drawer-panel{transform:translateX(0);}
+
+.drawer-head{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.drawer-hello{
+  flex:1;font-size:15px;font-weight:600;color:#f0e9db;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.drawer-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  color:#ddd6c9;font-size:14px;cursor:pointer;transition:.15s;
+}
+.drawer-close:hover{background:rgba(255,255,255,.14);}
+
+.drawer-item{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:12px 14px;border-radius:11px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  color:#e9e3d8;font-size:14px;font-weight:500;
+  cursor:pointer;transition:.15s;text-align:left;
+}
+.drawer-item:hover{background:rgba(201,139,58,.14);border-color:rgba(201,139,58,.28);}
+.drawer-item.danger{color:#ff9a9a;}
+.drawer-item.danger:hover{background:rgba(220,70,70,.15);border-color:rgba(220,70,70,.28);}
+.di-ico{font-size:18px;line-height:1;width:22px;text-align:center;}
+.di-text{flex:1;}
+
+.drawer-dev{
+  margin-top:auto;
+  display:flex;align-items:center;gap:12px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg, rgba(201,139,58,.14), rgba(201,139,58,.04));
+  border:1px solid rgba(201,139,58,.28);
+}
+.dev-avatar{
+  position:relative;width:52px;height:52px;border-radius:50%;
+  overflow:hidden;flex:0 0 auto;
+  background:radial-gradient(circle at 30% 25%, #ffd89b, #c98b3a 70%);
+  box-shadow:0 4px 10px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+}
+.dev-avatar img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+}
+.dev-avatar .dev-fallback{
+  font-size:22px;font-weight:800;color:#1a1206;
+  font-family:Georgia,serif;letter-spacing:1px;
+  display:none;
+}
+.dev-avatar.no-img .dev-fallback{display:block;}
+.dev-meta{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.dev-name{font-size:15px;font-weight:700;color:#f0e9db;letter-spacing:.5px;}
+.dev-phone{font-size:13px;color:#e0b877;text-decoration:none;font-weight:600;}
+.dev-phone:hover{text-decoration:underline;}
+.dev-role{font-size:10.5px;color:#8b8175;letter-spacing:.4px;text-transform:uppercase;}
+
+/* ============================================================
+   EXIT LOVE MODAL
+============================================================ */
+#exitLove{
+  position:fixed;inset:0;z-index:1100;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.78);backdrop-filter:blur(8px);padding:20px;
+  opacity:0;transition:opacity .25s;
+}
+#exitLove.open{display:flex;opacity:1;}
+.love-card{
+  width:100%;max-width:360px;
+  background:linear-gradient(180deg,#2a231b,#1a1610);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;padding:26px 22px 20px;
+  text-align:center;color:#f0e9db;
+  box-shadow:0 30px 70px rgba(0,0,0,.85);
+  transform:scale(.9);transition:transform .28s cubic-bezier(.2,.8,.3,1.2);
+}
+#exitLove.open .love-card{transform:scale(1);}
+.love-heart{
+  font-size:48px;line-height:1;
+  animation:heartBeat 1.2s ease-in-out infinite;
+  margin-bottom:8px;
+}
+@keyframes heartBeat{
+  0%,100%{transform:scale(1);}
+  15%{transform:scale(1.18);}
+  30%{transform:scale(1);}
+  45%{transform:scale(1.12);}
+}
+.love-card h3{margin:0 0 8px;font-size:19px;}
+.love-card p{margin:0 0 20px;font-size:13.5px;color:#a89e8f;line-height:1.5;}
+.love-actions{display:flex;gap:10px;}
+.love-btn{
+  flex:1;padding:12px 8px;border-radius:12px;font-size:14px;font-weight:600;
+  cursor:pointer;border:1px solid transparent;transition:.15s;
+}
+.love-btn.love{background:linear-gradient(135deg,#ff5b7f,#c2185b);color:#fff;}
+.love-btn.love:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.love-btn.leave{background:rgba(255,255,255,.06);color:#c8c0b4;border-color:rgba(255,255,255,.10);}
+.love-btn.leave:hover{background:rgba(255,255,255,.12);}
+.love-count{margin-top:14px;font-size:11px;color:#6f665a;letter-spacing:.3px;}
+
+/* ============================================================
+   HELP MODAL
+============================================================ */
+#helpModal{
+  position:fixed;inset:0;z-index:1100;display:none;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(6px);padding:20px;
+}
+#helpModal.open{display:flex;}
+.help-card{
+  width:100%;max-width:360px;
+  background:linear-gradient(180deg,#241f18,#1a1610);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:18px;padding:22px;
+  color:#f0e9db;
+}
+.help-card h3{margin:0 0 6px;font-size:17px;}
+.help-card p{margin:0 0 16px;font-size:13px;color:#a89e8f;}
+.help-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;margin-bottom:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;color:#e9e3d8;font-size:13.5px;text-decoration:none;
+  transition:.15s;
+}
+.help-row:hover{background:rgba(201,139,58,.14);border-color:rgba(201,139,58,.28);}
+.help-row span:first-child{font-size:18px;}
+.help-row b{color:#e0b877;}
+.help-close{
+  width:100%;margin-top:6px;padding:12px;
+  background:linear-gradient(135deg,#c98b3a,#a86a20);color:#1a1206;
+  border:none;border-radius:11px;font-size:14px;font-weight:700;
+  cursor:pointer;transition:.15s;
+}
+.help-close:hover{filter:brightness(1.1);}
+
+/* Make sure the drawer button looks the same in the library header */
+.lib-head .tb{height:36px;}
+</head>
+<body>
+
+<!-- ================= LIBRARY ================= -->
+<div id="library" class="screen active">
+  <div class="lib-head">
+    <div class="brand">My Almirah<small>Your notebooks, kept safe</small></div>
+<div class="spacer"></div>
+<input type="search" id="libSearch" placeholder="Search notebooks or typed text…">
+<button class="btn primary" id="newBookBtn">+ New Notebook</button>
+<button class="tb" id="drawerBtnLib" title="Menu">⋮</button>
+<div id="searchResults"></div>
+  </div>
+  <div class="almirah-outer">
+    <div class="almirah-top"></div>
+    <div class="almirah" id="shelves"></div>
+  </div>
+</div>
+
+<!-- ================= STUDIO ================= -->
+<div id="studio" class="screen">
+  <div id="topbar">
+    <button class="tb" id="backBtn" title="Back to almirah">☰</button>
+    <button class="tb" id="drawerBtnTop" title="Menu">⋮</button>
+    <button class="tb" id="speakBtn" title="Listen to this notebook">🔊</button>
+    <div id="nbTitle" contenteditable="true" spellcheck="false">Untitled</div>
+    <div class="sep"></div>
+    <button class="tb tool" data-tool="pen" title="Pen">🖊️</button>
+    <button class="tb tool" data-tool="pencil" title="Pencil">✏️</button>
+    <button class="tb tool" data-tool="highlighter" title="Highlighter">🖍️</button>
+    <button class="tb tool" data-tool="eraser" title="Eraser">🧽</button>
+<button class="tb tool" data-tool="text" title="Type text">T</button>
+    <div class="sep"></div>
+    <div id="colors"></div>
+    <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
+    <div class="sep"></div>
+    <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
+<select class="tbSel" id="ruleSel" title="Page style">
+  <option value="plain">Plain</option>
+  <option value="lined">Lined</option>
+  <option value="ruled">Ruled + margin</option>
+  <option value="dotted">Dotted</option>
+  <option value="grid">Graph</option>
+  <option value="spiral-left">Spiral notebook (single, left spiral)</option>
+  <option value="spiral-center">Spiral notebook (2-page spread)</option>
+  <option value="upsc-single">UPSC answer sheet (single)</option>
+  <option value="upsc-2page">UPSC answer sheet (2 page)</option>
+  <option value="omr">OMR practice sheet</option>
+</select>
+    <div class="sep"></div>
+    <div id="pageColors"></div>
+    <div class="sep"></div>
+    <button class="tb small" id="modeBtn" title="Page view mode">2 PAGE</button>
+    <button class="tb" id="zoomOut" title="Zoom out">−</button>
+    <span id="zoomLabel">100%</span>
+    <button class="tb" id="zoomIn" title="Zoom in">+</button>
+    <div class="sep"></div>
+    <button class="tb" id="undoBtn" title="Undo">↶</button>
+    <button class="tb" id="redoBtn" title="Redo">↷</button>
+    <button class="tb small" id="autoBtn" title="Auto page turn">AUTO</button>
+    <button class="tb" id="printBtn" title="Print / Save as PDF">🖨️</button>
+<button class="tb" id="appBtn" title="Fullscreen notebook">⛶</button>
+  </div>
+
+  <div id="stage">
+    <div id="book" class="two-page">
+      <div class="page-slot" id="slotLeft">
+        <canvas class="bg"></canvas><canvas class="ink"></canvas>
+        <div class="gutter"></div>
+      </div>
+      <div class="page-slot" id="slotRight">
+        <canvas class="bg"></canvas><canvas class="ink"></canvas>
+        <div class="gutter"></div>
+      </div>
+      <div id="spineShadow"></div>
+      <div id="flipper"></div>
+    </div>
+  </div>
+
+  <div id="bottombar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <div id="pageInfo">Page 1 – 2 of 40</div>
+    <button class="nav-btn" id="nextBtn">›</button>
+    <div class="sep"></div>
+    <button class="tb small" id="addPagesBtn">+ 20 pages</button>
+  </div>
+</div>
+
+<button id="exitAppBtn" title="Exit notebook mode">✕</button>
+
+<!-- ================= MODAL ================= -->
+<div id="modal">
+  <div class="modal-card">
+    <h3>Notebook Cover</h3>
+    <label>Name on cover</label>
+    <input type="text" id="mTitle" maxlength="26" placeholder="e.g. Physics Notes">
+    <label>Cover colour</label>
+    <div class="swatches" id="mColors"></div>
+    <label>Cover pattern</label>
+    <div class="swatches" id="mPatterns"></div>
+    <label>Cover photo</label>
+    <input type="file" id="mPhoto" accept="image/*">
+    <div class="modal-actions">
+      <button class="btn danger" id="mDelete">Delete</button>
+      <button class="btn primary" id="mClose">Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ================= DRAWER ================= -->
+<div id="drawer">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer-panel">
+    <div class="drawer-head">
+      <div class="drawer-hello" id="drawerHello">Hello, friend</div>
+      <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+    </div>
+
+    <button class="drawer-item" id="drawerLogin">
+      <span class="di-ico">👤</span>
+      <span class="di-text" id="drawerLoginText">Login</span>
+    </button>
+
+    <button class="drawer-item" id="drawerListen">
+      <span class="di-ico">🎧</span>
+      <span class="di-text">Listen to notebook</span>
+    </button>
+
+        <button class="drawer-item" id="drawerHelp">
+      <span class="di-ico">❓</span>
+      <span class="di-text">Help &amp; Feedback</span>
+    </button>
+
+    <button class="drawer-item danger" id="drawerClear">
+      <span class="di-ico">🗑️</span>
+      <span class="di-text">Clear all data</span>
+    </button>
+
+    <button class="drawer-item danger" id="drawerExit">
+      <span class="di-ico">🚪</span>
+      <span class="di-text">Exit app</span>
+    </button>
+        <div class="drawer-dev" id="drawerDev">
+      <div class="dev-avatar no-img">
+        <span class="dev-fallback">D</span>
+      </div>
+      <div class="dev-meta">
+        <div class="dev-name">DIVY</div>
+        <a class="dev-phone" href="tel:9369224174">9369224174</a>
+        <div class="dev-role">Developer &amp; Maintainer</div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ================= EXIT LOVE PROMPT ================= -->
+<div id="exitLove">
+  <div class="love-card">
+    <div class="love-heart">❤️</div>
+    <h3>Leaving so soon?</h3>
+    <p>We hope this notebook helped you study today.<br>Love the app? Let us know. 🙏</p>
+    <div class="love-actions">
+      <button class="love-btn love" id="loveBtn">❤️ Love it</button>
+      <button class="love-btn leave" id="leaveBtn">Leave</button>
+    </div>
+    <div class="love-count" id="loveCount"></div>
+  </div>
+</div>
+
+<!-- ================= HELP MODAL ================= -->
+<div id="helpModal">
+  <div class="help-card">
+    <h3>Help &amp; Feedback</h3>
+    <p>Stuck somewhere? We are here to help.</p>
+    <a class="help-row" href="tel:9369224174">
+      <span>📞</span> Call 9369224174
+    </a>
+    <a class="help-row" href="https://wa.me/919369224174" target="_blank" rel="noopener">
+      <span>💬</span> WhatsApp
+    </a>
+    <div class="help-row" id="helpTipRow">
+      <span>💡</span> Tip: use <b>T</b> tool to type with your keyboard
+    </div>
+    <div class="help-row" id="helpTipRow2">
+      <span>💡</span> Tip: press <b>F</b> for fullscreen notebook
+    </div>
+    <button class="help-close" id="helpClose">Close</button>
+  </div>
+</div>
+
+<!-- Floating pen that follows finger/cursor -->
+<div id="floatingPen">
+  <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/>
+    <polygon points="18,44 22,44 20,58" fill="#c8c8c8"/>
+    <polygon points="19,50 21,50 20,58" fill="#4a4a4a"/>
+    <rect x="15" y="6" width="10" height="40" rx="2" fill="#2c3e50"/>
+    <rect x="15" y="6" width="3" height="40" fill="#3d566e"/>
+    <rect x="15" y="34" width="10" height="12" fill="#c98b3a"/>
+    <rect x="15" y="4" width="10" height="4" rx="2" fill="#1a252f"/>
+  </svg>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   UTILITIES
+============================================================ */
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const uid = () => 'nb' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastTimer = null;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+const KEY = 'realnotebook.v1';
+
+const PATTERNS = {
+  plain:  '',
+  stripes:'repeating-linear-gradient(45deg, rgba(255,255,255,.11) 0 7px, rgba(0,0,0,.09) 7px 14px)',
+  dots:   'radial-gradient(rgba(255,255,255,.22) 1.6px, transparent 2px) 0 0/13px 13px',
+  grid:   'linear-gradient(rgba(255,255,255,.14) 1px, transparent 1px) 0 0/15px 15px, linear-gradient(90deg, rgba(255,255,255,.14) 1px, transparent 1px) 0 0/15px 15px',
+  lines:  'repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 2px, transparent 2px 11px)'
+};
+
+const COVER_COLORS = ['#1e3a8a','#7f1d1d','#14532d','#4c1d95','#78350f','#0f766e','#831843','#1f2937','#b45309','#334155'];
+const PAGE_COLORS = [
+  // Neutrals / real paper
+  '#ffffff',   // white
+  '#fffdf6',   // warm white
+  '#f7f4ec',   // aged ivory
+  '#fdf8e8',   // cream
+  '#f0ece1',   // kraft light
+
+  // Pastel pinks / reds
+  '#fdf2f2',   // rose blush
+  '#fce7f3',   // soft pink
+  '#fbcfe8',   // bubblegum
+  '#fee2e2',   // rose
+
+  // Pastel oranges / yellows
+  '#fef3c7',   // butter yellow
+  '#fde68a',   // sunshine
+  '#fef0e6',   // peach
+
+  // Pastel greens
+  '#eef5f0',   // mint
+  '#dcfce7',   // leaf
+  '#d1fae5',   // aqua green
+  '#ecfccb',   // lime pastel
+
+  // Pastel blues / cyans
+  '#e0f2fe',   // sky
+  '#dbeafe',   // powder blue
+  '#cffafe',   // cyan pastel
+
+  // Pastel purples
+  '#ede9fe',   // lavender
+  '#f5f0ff',   // lilac
+  '#f3e8ff',   // violet mist
+
+  // Slight tinted tints
+  '#fef2f2',   // very light coral
+  '#f0f9ff',   // ice blue
+];
+const PEN_COLORS   = ['#152a5c','#111111','#b91c1c','#166534','#1d4ed8','#7c3aed','#b45309','#db2777'];
+
+/* 10 colours students actually use for exam writing */
+const TEXT_COLORS  = [
+  '#111111',  // black
+  '#152a5c',  // deep blue (school ink)
+  '#1d4ed8',  // royal blue
+  '#0f766e',  // teal
+  '#166534',  // green
+  '#b45309',  // brown (fountain ink)
+  '#b91c1c',  // red (for corrections / headings)
+  '#7c3aed',  // violet
+  '#db2777',  // pink
+  '#475569',  // slate grey
+];
+
+/* 6 highlighter colours — yellow, green, pink, cyan, orange, lavender */
+const HL_COLORS = [
+  { name:'Yellow',   color:'#ffe14d' },
+  { name:'Green',    color:'#a7f3a7' },
+  { name:'Pink',     color:'#ff9ec7' },
+  { name:'Cyan',     color:'#8ee4f5' },
+  { name:'Orange',   color:'#ffb877' },
+  { name:'Lavender', color:'#c4b5fd' },
+];
+
+/* 17 famous fonts — Indian students use all of these */
+const FONTS = [
+  { id:'sans',      label:'Sans (default)',  css:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif' },
+  { id:'serif',     label:'Serif',           css:'Georgia,"Times New Roman",serif' },
+  { id:'times',     label:'Times New Roman', css:'"Times New Roman",Times,serif' },
+  { id:'georgia',   label:'Georgia',         css:'Georgia,serif' },
+  { id:'garamond',  label:'Garamond',        css:'Garamond,"Times New Roman",serif' },
+  { id:'palatino',  label:'Palatino',        css:'"Palatino Linotype",Palatino,serif' },
+  { id:'cambria',   label:'Cambria',         css:'Cambria,Georgia,serif' },
+  { id:'book',      label:'Book Antiqua',    css:'"Book Antiqua",Palatino,serif' },
+  { id:'arial',     label:'Arial',           css:'Arial,Helvetica,sans-serif' },
+  { id:'helvetica', label:'Helvetica',       css:'Helvetica,Arial,sans-serif' },
+  { id:'verdana',   label:'Verdana',         css:'Verdana,Geneva,sans-serif' },
+  { id:'tahoma',    label:'Tahoma',          css:'Tahoma,Geneva,sans-serif' },
+  { id:'trebuchet', label:'Trebuchet MS',    css:'"Trebuchet MS",Helvetica,sans-serif' },
+  { id:'comic',     label:'Comic Sans',      css:'"Comic Sans MS","Comic Sans",cursive' },
+  { id:'cursive',   label:'Cursive',         css:'cursive' },
+  { id:'courier',   label:'Courier New',     css:'"Courier New",monospace' },
+  { id:'impact',    label:'Impact',          css:'Impact,"Arial Black",sans-serif' },
+];
+
+const DEFAULT_SIZES = { pen: 2.6, pencil: 2.2, highlighter: 17, eraser: 26, text: 30 };
+/* ============================================================
+   STATE
+============================================================ */
+const state = {
+  notebooks: [],
+  currentId: null,
+  current: 0,
+  mode: 'two',
+  zoom: 1, panX: 0, panY: 0,
+  tool: 'pen',
+  penColor: '#152a5c',
+  hlColor: '#ffe14d',
+  textColor: '#111111',
+  textFont: 'sans',
+  sizes: { ...DEFAULT_SIZES },
+  appMode: false,
+  auto: false, autoSpeed: 7,
+  pw: 400, ph: 560, spine: 6
+};
+
+/* ============================================================
+   STORAGE
+============================================================ */
+function persist(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify({
+      v: 1,
+      notebooks: state.notebooks,
+      last: state.currentId
+    }));
+  }catch(e){
+    console.warn('Save failed:', e);
+    if (!persist.__warned){
+      persist.__warned = true;
+      setTimeout(() => { persist.__warned = false; }, 15000);
+      toast('Storage full — menu → Clear all data to reset');
+    }
+  }
+}
+let saveTimer = null;
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(persist, 600); }
+
+// Flush any pending save if the tab is closed quickly
+window.addEventListener('beforeunload', () => {
+  if (saveTimer){ clearTimeout(saveTimer); persist(); }
+});
+window.addEventListener('pagehide', () => {
+  if (saveTimer){ clearTimeout(saveTimer); persist(); }
+});
+function newNotebook(opts = {}){
+  const n = opts.pageCount || 40;
+  const pages = [];
+  for (let i = 0; i < n; i++) pages.push({ strokes: [] });
+  return {
+    id: uid(),
+    title: opts.title || 'Untitled',
+    cover: opts.cover || COVER_COLORS[Math.floor(Math.random()*COVER_COLORS.length)],
+    pattern: opts.pattern || 'plain',
+    photo: null,
+    pageColor: opts.pageColor || '#fffdf6',
+    rule: opts.rule || 'ruled',
+    pages,
+    createdAt: Date.now()
+  };
+}
+
+function loadAll(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if (raw){
+      const d = JSON.parse(raw);
+      state.notebooks = d.notebooks || [];
+      state.currentId = d.last || null;
+    }
+  }catch(e){ console.warn(e); }
+
+    if (!state.notebooks.length){
+    state.notebooks.push(newNotebook({ title:'Physics', cover:'#1e3a8a', pattern:'lines', rule:'ruled',  pageColor:'#fffdf6', pageCount:12 }));
+    state.notebooks.push(newNotebook({ title:'Maths',   cover:'#7f1d1d', pattern:'plain', rule:'grid',   pageColor:'#fffef9', pageCount:12 }));
+    state.notebooks.push(newNotebook({ title:'English', cover:'#14532d', pattern:'dots',  rule:'lined',  pageColor:'#fdf8e8', pageCount:12 }));
+    try { persist(); } catch(e){}
+  }
+}
+
+const currentNotebook = () => state.notebooks.find(n => n.id === state.currentId) || null;
+
+/* ============================================================
+   SCREEN SWITCHING
+============================================================ */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#' + name).classList.add('active');
+}
+
+/* ============================================================
+   LIBRARY RENDERING
+============================================================ */
+function renderLibrary(){
+  const wrap = $('#shelves');
+  wrap.innerHTML = '';
+  const per = 5;
+  const rows = Math.max(1, Math.ceil(state.notebooks.length / per));
+
+  for (let r = 0; r < rows; r++){
+    const row = document.createElement('div');
+    row.className = 'shelf-row';
+    const inner = document.createElement('div');
+    inner.className = 'shelf-books';
+
+    state.notebooks.slice(r*per, (r+1)*per).forEach(nb => inner.appendChild(bookEl(nb)));
+
+    if (r === rows - 1){
+      const add = document.createElement('div');
+      add.className = 'add-book';
+      add.innerHTML = '<span>+</span>New';
+      add.addEventListener('click', createNotebook);
+      inner.appendChild(add);
+    }
+    row.appendChild(inner);
+    wrap.appendChild(row);
+  }
+}
+
+function bookEl(nb){
+  const el = document.createElement('div');
+  el.className = 'book';
+  el.style.background = nb.cover;
+  if (PATTERNS[nb.pattern]) el.style.backgroundImage = PATTERNS[nb.pattern];
+
+  const photo = nb.photo ? `<img src="${nb.photo}" alt="">` : '';
+  el.innerHTML = `
+    <div class="spine"></div>
+    <div class="cover-inner">
+      ${photo}
+      <div class="cover-label">${esc(nb.title)}</div>
+    </div>
+    <button class="book-menu" title="Edit cover">✎</button>
+  `;
+
+  el.addEventListener('click', ev => {
+    if (ev.target.closest('.book-menu')) return;
+    openNotebook(nb.id);
+  });
+  el.querySelector('.book-menu').addEventListener('click', ev => {
+    ev.stopPropagation();
+    openCoverModal(nb.id);
+  });
+  return el;
+}
+
+/* ============================================================
+   SEARCH ACROSS NOTEBOOKS + TYPED TEXT
+============================================================ */
+function searchAll(q){
+  const query = q.trim().toLowerCase();
+  if (!query) return [];
+  const hits = [];
+
+  state.notebooks.forEach(nb => {
+    // Match on notebook title
+    if (nb.title.toLowerCase().includes(query)){
+      hits.push({ nbId: nb.id, page: 0, type: 'title', title: nb.title, sub: 'Notebook' });
+    }
+    // Match on typed text inside pages
+    nb.pages.forEach((page, pIdx) => {
+      page.strokes.forEach(s => {
+        if (s.tool === 'text' && String(s.text || '').toLowerCase().includes(query)){
+          const snippet = String(s.text).replace(/\s+/g, ' ').slice(0, 70);
+          hits.push({
+            nbId: nb.id,
+            page: pIdx,
+            type: 'text',
+            title: nb.title,
+            sub: 'Page ' + (pIdx + 1) + ' — “' + snippet + '”'
+          });
+        }
+      });
+    });
+  });
+  return hits.slice(0, 40);
+}
+
+function renderSearchResults(hits){
+  const box = $('#searchResults');
+  if (!hits.length){
+    box.innerHTML = '<div class="search-empty">No matches</div>';
+    box.classList.add('open');
+    return;
+  }
+  box.innerHTML = hits.map(h => `
+    <div class="search-result" data-nb="${h.nbId}" data-page="${h.page}">
+      <div class="st-title">${esc(h.title)}</div>
+      <div class="st-sub">${esc(h.sub)}</div>
+    </div>
+  `).join('');
+  box.querySelectorAll('.search-result').forEach(el => {
+    el.addEventListener('click', () => {
+      box.classList.remove('open');
+      $('#libSearch').value = '';
+      openNotebook(el.dataset.nb, +el.dataset.page);
+    });
+  });
+  box.classList.add('open');
+}
+
+$('#libSearch').addEventListener('input', e => {
+  const q = e.target.value;
+  if (!q.trim()){ $('#searchResults').classList.remove('open'); return; }
+  renderSearchResults(searchAll(q));
+});
+
+$('#libSearch').addEventListener('blur', () => {
+  setTimeout(() => $('#searchResults').classList.remove('open'), 180);
+});
+
+$('#libSearch').addEventListener('focus', e => {
+  if (e.target.value.trim()){
+    renderSearchResults(searchAll(e.target.value));
+  }
+});
+
+function createNotebook(){
+  const nb = newNotebook({ title: 'Notebook ' + (state.notebooks.length + 1) });
+  state.notebooks.push(nb);
+  persist();
+  renderLibrary();
+  toast('New notebook added to your almirah');
+}
+
+/* ============================================================
+   COVER MODAL
+============================================================ */
+let modalNbId = null;
+
+function openCoverModal(id){
+  modalNbId = id;
+  const nb = state.notebooks.find(n => n.id === id);
+  if (!nb) return;
+
+  $('#mTitle').value = nb.title;
+
+  const cw = $('#mColors'); cw.innerHTML = '';
+  COVER_COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c === nb.cover ? ' on' : '');
+    s.style.background = c;
+    s.addEventListener('click', () => {
+      nb.cover = c; persist(); renderLibrary();
+      [...cw.children].forEach(x => x.classList.remove('on')); s.classList.add('on');
+    });
+    cw.appendChild(s);
+  });
+
+  const pw = $('#mPatterns'); pw.innerHTML = '';
+  Object.keys(PATTERNS).forEach(p => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (p === nb.pattern ? ' on' : '');
+    s.style.background = nb.cover;
+    if (PATTERNS[p]) s.style.backgroundImage = PATTERNS[p];
+    s.title = p;
+    s.addEventListener('click', () => {
+      nb.pattern = p; persist(); renderLibrary();
+      [...pw.children].forEach(x => x.classList.remove('on')); s.classList.add('on');
+    });
+    pw.appendChild(s);
+  });
+
+  $('#modal').classList.add('open');
+}
+
+$('#mClose').addEventListener('click', () => {
+  const nb = state.notebooks.find(n => n.id === modalNbId);
+  if (nb){ nb.title = ($('#mTitle').value || 'Untitled').slice(0,26); persist(); renderLibrary(); }
+  $('#modal').classList.remove('open');
+  if (state.currentId === modalNbId && nb) $('#nbTitle').textContent = nb.title;
+});
+
+$('#mTitle').addEventListener('input', e => {
+  const nb = state.notebooks.find(n => n.id === modalNbId);
+  if (nb){ nb.title = e.target.value || 'Untitled'; persist(); renderLibrary(); }
+});
+
+$('#mDelete').addEventListener('click', () => {
+  if (!confirm('Delete this notebook permanently?')) return;
+  state.notebooks = state.notebooks.filter(n => n.id !== modalNbId);
+  if (state.currentId === modalNbId) state.currentId = null;
+  persist(); renderLibrary();
+  $('#modal').classList.remove('open');
+  toast('Notebook deleted');
+});
+
+$('#mPhoto').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 420;
+      const scale = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const nb = state.notebooks.find(n => n.id === modalNbId);
+      if (nb){ nb.photo = c.toDataURL('image/jpeg', 0.82); persist(); renderLibrary(); }
+      toast('Cover photo set');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') $('#mClose').click(); });
+
+/* ============================================================
+   NOTEBOOK VIEW
+============================================================ */
+const els = {
+  stage: $('#stage'),
+  book: $('#book'),
+  slotLeft: $('#slotLeft'),
+  slotRight: $('#slotRight'),
+  flipper: $('#flipper')
+};
+
+function initSlot(slot){
+  slot.bg = slot.querySelector('canvas.bg');
+  slot.ink = slot.querySelector('canvas.ink');
+  slot.ink.__slot = slot;
+  slot.pageIndex = -1;
+}
+initSlot(els.slotLeft);
+initSlot(els.slotRight);
+
+function openNotebook(id, startPage){
+  state.currentId = id;
+  state.current = startPage || 0;
+  state.zoom = 1; state.panX = 0; state.panY = 0;
+  applyTransform();
+
+  const nb = currentNotebook();
+  $('#nbTitle').textContent = nb.title;
+  $('#ruleSel').value = nb.rule;
+  buildPageColors();
+  buildToolColors();
+
+  showScreen('studio');
+  requestAnimationFrame(() => {
+    layout();
+    renderSpread();
+  });
+  persist();
+}
+
+/* ---------------- layout ---------------- */
+function layout(){
+  const nb = currentNotebook();
+  if (!nb) return;
+
+  const rect = els.stage.getBoundingClientRect();
+  const padX = state.appMode ? 0 : 28;
+  const padY = state.appMode ? 0 : 28;
+  const availW = Math.max(160, rect.width - padX);
+  const availH = Math.max(200, rect.height - padY);
+
+  const ratio = 0.715;
+  const cols = state.mode === 'two' ? 2 : 1;
+
+  let pw, ph, spine;
+
+  if (state.appMode){
+    // ===== FULLSCREEN MODE: stretch pages to fill 100% of the screen =====
+    spine = state.mode === 'two' ? Math.max(2, Math.round(availW * 0.006)) : 0;
+    pw = (availW - spine) / cols;
+    ph = availH;
+    // Blend page colour into stage so nothing dark shows around edges
+    els.stage.style.background = nb.pageColor;
+  } else {
+    // ===== NORMAL MODE: keep A4 ratio =====
+    spine = state.mode === 'two' ? Math.max(5, Math.round(availH * 0.015)) : 0;
+    ph = Math.min(availH, 980);
+    pw = ph * ratio;
+    if (pw * cols + spine > availW){
+      pw = (availW - spine) / cols;
+      ph = pw / ratio;
+    }
+    els.stage.style.background = '';
+  }
+
+  state.pw = pw;
+  state.ph = ph;
+  state.spine = spine;
+
+  els.book.style.setProperty('--pw', pw + 'px');
+  els.book.style.setProperty('--ph', ph + 'px');
+  els.book.style.setProperty('--spine', spine + 'px');
+
+  resizeSlot(els.slotLeft, pw, ph);
+  if (state.mode === 'two') resizeSlot(els.slotRight, pw, ph);
+}
+function resizeSlot(slot, pw, ph){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.round(pw * dpr), h = Math.round(ph * dpr);
+  [slot.bg, slot.ink].forEach(c => {
+    if (c.width !== w || c.height !== h){
+      c.width = w; c.height = h;
+    }
+    c.style.width = pw + 'px';
+    c.style.height = ph + 'px';
+  });
+}
+
+/* ---------------- page rendering ---------------- */
+/* ============================================================
+   PAGE TEMPLATE RENDERERS (Indian school / UPSC / OMR styles)
+============================================================ */
+
+function alphaHex(hex, a){
+  const c = hex.replace('#','');
+  const r = parseInt(c.substring(0,2),16);
+  const g = parseInt(c.substring(2,4),16);
+  const b = parseInt(c.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function paintHorizontalLines(ctx, W, H, color, alpha){
+  const gap = H / 26;
+  ctx.strokeStyle = alphaHex(color, alpha);
+  for (let y = gap; y < H - gap * 0.15; y += gap){
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+}
+
+function paintMarginLine(ctx, W, H, color, pos){
+  ctx.strokeStyle = alphaHex(color, 0.60);
+  ctx.beginPath();
+  ctx.moveTo(W * pos, 0);
+  ctx.lineTo(W * pos, H);
+  ctx.stroke();
+}
+
+function paintDots(ctx, W, H){
+  const gap = H / 26;
+  const r = Math.max(1, W / 720);
+  ctx.fillStyle = 'rgba(112,138,176,.55)';
+  for (let y = gap; y < H; y += gap){
+    for (let x = gap; x < W; x += gap){
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+function paintGrid(ctx, W, H){
+  const gap = H / 26;
+  ctx.strokeStyle = 'rgba(112,146,190,.32)';
+  for (let y = gap; y < H; y += gap){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  for (let x = gap; x < W; x += gap){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+}
+
+function paintSpiral(ctx, W, H, side){
+  const dir = side === 'left' ? 1 : -1;
+  const baseX = side === 'left' ? 0 : W;
+  const holes = Math.max(14, Math.floor(H / 36));
+  const gap = H / holes;
+  const ringW = Math.max(12, W * 0.030);
+  const ringH = Math.min(gap * 0.72, 16);
+  const ringOffset = Math.max(6, W * 0.016);
+
+  // Soft shadow strip running along the spine
+  const gradW = ringOffset + ringW * 0.7;
+  const grad = side === 'left'
+    ? ctx.createLinearGradient(0, 0, gradW, 0)
+    : ctx.createLinearGradient(W, 0, W - gradW, 0);
+  grad.addColorStop(0, 'rgba(0,0,0,0.10)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  if (side === 'left') ctx.fillRect(0, 0, gradW, H);
+  else                 ctx.fillRect(W - gradW, 0, gradW, H);
+
+  // Perforation dot line (small tear-off dots on paper)
+  ctx.fillStyle = 'rgba(120,100,80,0.35)';
+  const perfX = baseX + dir * (ringOffset * 1.55);
+  for (let i = 0; i < holes * 4; i++){
+    const py = (H / (holes * 4)) * (i + 0.5);
+    ctx.beginPath();
+    ctx.arc(perfX, py, Math.max(0.8, W/1000), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (let i = 0; i < holes; i++){
+    const cy = gap * (i + 0.5);
+
+    // Dark hole in the paper
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(50,40,30,0.62)';
+    ctx.ellipse(baseX + dir * ringOffset * 0.7, cy,
+                ringW * 0.20, ringH * 0.60, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Metal ring outer stroke
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth = Math.max(1.3, W / 420);
+    ctx.beginPath();
+    ctx.ellipse(baseX + dir * ringOffset * 0.55, cy,
+                ringW * 0.78, ringH * 0.50, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Highlight arc
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = Math.max(0.6, W / 750);
+    ctx.beginPath();
+    ctx.ellipse(baseX + dir * ringOffset * 0.55, cy,
+                ringW * 0.62, ringH * 0.35, 0,
+                Math.PI * 0.85, Math.PI * 1.65);
+    ctx.stroke();
+
+    // Shadow under ring
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.ellipse(baseX + dir * ringOffset * 0.55, cy + ringH * 0.68,
+                ringW * 0.55, ringH * 0.15, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function paintDatePageBox(ctx, W, H, color){
+  const bw = W * 0.32;
+  const bh = H * 0.050;
+  const bx = W - bw - W * 0.055;
+  const by = H * 0.022;
+  const r  = Math.max(2, W * 0.006);
+
+  ctx.save();
+  ctx.strokeStyle = alphaHex(color, 0.68);
+  ctx.lineWidth = Math.max(0.9, W / 750);
+
+  roundRectPath(ctx, bx, by, bw, bh, r);
+  ctx.stroke();
+
+  const half = bh / 2;
+
+  // Horizontal divider (top row "Date", bottom row "Page No.")
+  ctx.beginPath();
+  ctx.moveTo(bx, by + half);
+  ctx.lineTo(bx + bw, by + half);
+  ctx.stroke();
+
+  // Vertical divider inside bottom row
+  ctx.beginPath();
+  ctx.moveTo(bx + bw * 0.40, by + half);
+  ctx.lineTo(bx + bw * 0.40, by + bh);
+  ctx.stroke();
+
+  const fs = Math.max(7, W * 0.019);
+  ctx.fillStyle = alphaHex(color, 0.90);
+  ctx.font = `${fs}px -apple-system, Arial, sans-serif`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'left';
+  ctx.fillText('Date', bx + bw * 0.05, by + half * 0.5);
+  ctx.fillText('Page No.', bx + bw * 0.44, by + half * 1.5);
+  ctx.restore();
+}
+
+function paintUPSCFrame(ctx, W, H, isRightSide){
+  const m = W * 0.075;
+  const headerH = H * 0.10;
+  const lineTop = m + headerH;
+
+  ctx.save();
+  ctx.strokeStyle = '#111';
+  ctx.fillStyle = '#111';
+  ctx.lineWidth = Math.max(1.4, W / 320);
+
+  // Outer frame
+  ctx.strokeRect(m, m, W - 2*m, H - 2*m);
+
+  // Header divider
+  ctx.beginPath();
+  ctx.moveTo(m, lineTop); ctx.lineTo(W - m, lineTop);
+  ctx.stroke();
+
+  // Left question-number box
+  const leftBoxX = m + W * 0.13;
+  ctx.beginPath();
+  ctx.moveTo(leftBoxX, m); ctx.lineTo(leftBoxX, lineTop);
+  ctx.stroke();
+
+  // Right label box
+  const rightBoxX = W - m - W * 0.19;
+  ctx.beginPath();
+  ctx.moveTo(rightBoxX, m); ctx.lineTo(rightBoxX, lineTop);
+  ctx.stroke();
+
+  // Horizontal split inside each side box
+  ctx.beginPath();
+  ctx.moveTo(m, m + headerH * 0.55); ctx.lineTo(leftBoxX, m + headerH * 0.55);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(rightBoxX, m + headerH * 0.55); ctx.lineTo(W - m, m + headerH * 0.55);
+  ctx.stroke();
+
+  // Title — U.P.S.C.
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `bold ${Math.max(22, W * 0.105)}px Georgia, "Times New Roman", serif`;
+  ctx.fillText('U.P.S.C.', (leftBoxX + rightBoxX) / 2, m + headerH * 0.52);
+
+  // Small labels
+  const fs = Math.max(6.5, W * 0.016);
+  ctx.font = `${fs}px Arial, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.fillText('Question No.', m + 3, m + headerH * 0.28);
+  ctx.fillText('Date', m + 3, m + headerH * 0.78);
+
+  ctx.textAlign = 'right';
+  ctx.font = `italic ${fs}px Arial, sans-serif`;
+  ctx.fillText('For Practice Use Only', W - m - 3, m + headerH * 0.28);
+  ctx.fillText('Total Pages  32', W - m - 3, m + headerH * 0.78);
+
+  // Bottom "End of Answer"
+  ctx.textAlign = 'center';
+  ctx.font = `italic ${Math.max(7, W * 0.018)}px Arial, sans-serif`;
+  ctx.fillText('— End of Answer —', W / 2, H - m - H * 0.020);
+
+  ctx.restore();
+}
+
+function paintOMR(ctx, W, H){
+  const m = W * 0.04;
+  ctx.save();
+  ctx.strokeStyle = '#111';
+  ctx.fillStyle = '#111';
+  ctx.lineWidth = Math.max(1, W / 500);
+
+  // Title
+  ctx.font = `bold ${Math.max(10, W * 0.026)}px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('SAMPLE OMR SHEET FOR PRACTICE', W / 2, m);
+
+  // Name box
+  const topY = m + H * 0.045;
+  const nameH = H * 0.050;
+  ctx.strokeRect(m, topY, W * 0.60, nameH);
+  const fs = Math.max(7, W * 0.017);
+  ctx.font = `${fs}px Arial, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('NAME OF CANDIDATE (IN CAPITAL LETTERS)', m + 6, topY + nameH * 0.5);
+
+  // Class + Roll boxes to the right
+  const infoX = m + W * 0.62;
+  const infoW = W - infoX - m;
+  const infoH = nameH / 2 - 1;
+  ['CLASS', 'ROLL No.'].forEach((lab, i) => {
+    const y = topY + i * (infoH + 2);
+    ctx.strokeRect(infoX, y, infoW, infoH);
+    ctx.fillText(lab, infoX + 4, y + infoH * 0.5);
+  });
+
+  // Bubble grid
+  const gridTop = topY + nameH + H * 0.045;
+  const gridBottom = H - m - H * 0.08;
+  const gridH = gridBottom - gridTop;
+
+  const cols = 4;
+  const rows = 15;
+  const labelW = W * 0.06;
+  const gridLeft = m + labelW;
+  const gridRight = W - m;
+  const colW = (gridRight - gridLeft) / cols;
+  const rowH = gridH / rows;
+  const rad = Math.min(colW * 0.28, rowH * 0.30);
+
+  // Column headers
+  ctx.font = `bold ${Math.max(7, W * 0.017)}px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c76aa0';
+  for (let c = 0; c < cols; c++){
+    ctx.fillText(String(c + 1), gridLeft + colW * (c + 0.5), gridTop - rowH * 0.55);
+  }
+
+  // Rows of bubbles
+  for (let rIdx = 0; rIdx < rows; rIdx++){
+    const y = gridTop + rowH * (rIdx + 0.5);
+
+    ctx.fillStyle = '#111';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${Math.max(7, W * 0.017)}px Arial, sans-serif`;
+    ctx.fillText(String(rIdx + 1), gridLeft - 4, y);
+
+    ctx.strokeStyle = '#c76aa0';
+    ctx.lineWidth = Math.max(0.7, W / 900);
+    for (let c = 0; c < cols; c++){
+      ctx.beginPath();
+      ctx.arc(gridLeft + colW * (c + 0.5), y, rad, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  // Footer instructions
+  ctx.fillStyle = '#111';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = `${Math.max(6, W * 0.014)}px Arial, sans-serif`;
+  ctx.fillText('Use blue or black ball point pen only. Darken bubbles completely.', m, H - m - H * 0.030);
+  ctx.fillText('Do not use whitener or eraser.', m, H - m - H * 0.012);
+
+  ctx.restore();
+}
+
+/* ============================================================
+   THE DISPATCHER — called by every slot & flip
+============================================================ */
+function drawRuling(ctx, W, H, style, side){
+  side = side || 'single';
+  ctx.save();
+  ctx.lineWidth = Math.max(1, W / 900);
+
+  switch (style){
+    case 'plain':
+    case 'blank':
+      break;
+
+    case 'lined':
+      paintHorizontalLines(ctx, W, H, '#5c82bf', 0.42);
+      break;
+
+    case 'ruled':
+      paintHorizontalLines(ctx, W, H, '#5c82bf', 0.42);
+      paintMarginLine(ctx, W, H, '#d65c5c', 0.15);
+      break;
+
+    case 'dotted':
+      paintDots(ctx, W, H);
+      break;
+
+    case 'grid':
+      paintGrid(ctx, W, H);
+      break;
+
+    /* ---- Indian spiral notebook, pink ruled (Image 6) ---- */
+    case 'spiral-left':
+      paintHorizontalLines(ctx, W, H, '#c05375', 0.55);
+      paintMarginLine(ctx, W, H, '#e078a0', 0.17);
+      paintDatePageBox(ctx, W, H, '#c05375');
+      if (side === 'single' || side === 'left'){
+        paintSpiral(ctx, W, H, 'left');
+      }
+      break;
+
+    /* ---- Spiral two-page spread, blue ruled (Image 5) ---- */
+    case 'spiral-center':
+      paintHorizontalLines(ctx, W, H, '#4a7fc1', 0.45);
+      paintMarginLine(ctx, W, H, '#6aa0dc', 0.20);
+      paintDatePageBox(ctx, W, H, '#4a7fc1');
+      if (side === 'left'){
+        paintSpiral(ctx, W, H, 'right');   // spine sits at centre
+      } else if (side === 'single'){
+        paintSpiral(ctx, W, H, 'left');
+      }
+      break;
+
+    /* ---- UPSC answer sheet, single page (Image 3) ---- */
+    case 'upsc-single':
+      paintUPSCFrame(ctx, W, H, false);
+      if (side === 'single' || side === 'left'){
+        paintSpiral(ctx, W, H, 'left');
+      }
+      break;
+
+    /* ---- UPSC answer sheet, 2-page spread (Image 4) ---- */
+    case 'upsc-2page':
+      paintUPSCFrame(ctx, W, H, side === 'right');
+      if (side === 'left'){
+        paintSpiral(ctx, W, H, 'right');
+      } else if (side === 'single'){
+        paintSpiral(ctx, W, H, 'left');
+      }
+      break;
+
+    /* ---- OMR practice sheet (Image 7) ---- */
+    case 'omr':
+      paintOMR(ctx, W, H);
+      break;
+
+    default:
+      paintHorizontalLines(ctx, W, H, '#5c82bf', 0.42);
+      paintMarginLine(ctx, W, H, '#d65c5c', 0.15);
+  }
+
+  ctx.restore();
+}
+function renderStroke(ctx, W, H, s){
+  // --- TEXT objects ---
+      if (s.tool === 'text'){
+    ctx.save();
+    ctx.fillStyle = s.color;
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'left';
+    const fs = Math.max(10, s.size * W);
+    const fontDef = FONTS.find(f => f.id === s.font) || FONTS[0];
+    ctx.font = `${fs}px ${fontDef.css}`;
+
+    const maxW = Math.max(fs * 2, W - s.x * W - W * 0.03);
+    const out = [];
+    String(s.text || '').split('\n').forEach(raw => {
+      let line = '';
+      raw.split(' ').forEach(word => {
+        const test = line ? line + ' ' + word : word;
+        if (line && ctx.measureText(test).width > maxW){ out.push(line); line = word; }
+        else line = test;
+      });
+      out.push(line);
+    });
+
+    out.forEach((line, i) => {
+      ctx.fillText(line, s.x * W, s.y * H + i * fs * 1.25);
+    });
+    ctx.restore();
+    return;
+  }
+
+  const pts = s.points;
+  if (!pts || !pts.length) return;
+  const base = s.size * W;
+
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineCap = s.tool === 'highlighter' ? 'butt' : 'round';
+
+  if (s.tool === 'eraser'){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+  } else if (s.tool === 'highlighter'){
+    ctx.globalAlpha = 0.38;
+    ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
+  } else if (s.tool === 'pencil'){
+    ctx.globalAlpha = 0.82;
+    ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
+  } else {
+    ctx.strokeStyle = s.color;
+    ctx.fillStyle = s.color;
+  }
+
+  if (pts.length === 1){
+    const p = pts[0];
+    ctx.beginPath();
+    ctx.arc(p.x*W, p.y*H, Math.max(0.7, base * (0.45 + p.p*0.6) / 2), 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+    return;
+  }
+
+  for (let i = 1; i < pts.length; i++){
+    const a = pts[i-1], b = pts[i];
+    ctx.beginPath();
+    ctx.lineWidth = Math.max(0.7, base * (0.42 + 0.9 * ((a.p + b.p) / 2)));
+    ctx.moveTo(a.x*W, a.y*H);
+    ctx.lineTo(b.x*W, b.y*H);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function renderPageFull(ctx, W, H, idx){
+  const nb = currentNotebook();
+  if (!nb) return;
+  ctx.save();
+  ctx.fillStyle = nb.pageColor;
+  ctx.fillRect(0, 0, W, H);
+  drawRuling(ctx, W, H, nb.rule, 'single');
+  const page = nb.pages[idx];
+  if (page) for (const s of page.strokes) renderStroke(ctx, W, H, s);
+  ctx.restore();
+}
+
+function drawSlot(slot, idx){
+  const nb = currentNotebook();
+  if (!nb) return;
+  const bg = slot.bg, ink = slot.ink;
+  const W = bg.width, H = bg.height;
+  if (!W || !H) return;
+
+  const side = (state.mode === 'one') ? 'single'
+             : (slot === els.slotLeft) ? 'left'
+             : 'right';
+
+  const bctx = bg.getContext('2d');
+  bctx.clearRect(0, 0, W, H);
+  bctx.fillStyle = nb.pageColor;
+  bctx.fillRect(0, 0, W, H);
+  drawRuling(bctx, W, H, nb.rule, side);
+
+  const ictx = ink.getContext('2d');
+  ictx.clearRect(0, 0, W, H);
+  const page = nb.pages[idx];
+  if (page) for (const s of page.strokes) renderStroke(ictx, W, H, s);
+
+  slot.pageIndex = idx;
+  slot.ink.style.cursor = state.tool === 'eraser' ? 'cell' : 'crosshair';
+}
+
+function renderSpread(){
+  const nb = currentNotebook();
+  if (!nb) return;
+
+  if (state.mode === 'two'){
+    els.book.className = 'two-page';
+    drawSlot(els.slotLeft, state.current);
+    drawSlot(els.slotRight, state.current + 1);
+    els.slotRight.style.display = '';
+  } else {
+    els.book.className = 'one-page';
+    drawSlot(els.slotLeft, state.current);
+    els.slotRight.style.display = 'none';
+    els.slotRight.pageIndex = -1;
+  }
+  updatePageInfo();
+}
+
+function updatePageInfo(){
+  const nb = currentNotebook();
+  if (!nb) return;
+  const total = nb.pages.length;
+  let text;
+  if (state.mode === 'two'){
+    const a = state.current + 1;
+    const b = Math.min(state.current + 2, total);
+    text = `Page ${a} – ${b} of ${total}`;
+  } else {
+    text = `Page ${state.current + 1} of ${total}`;
+  }
+  $('#pageInfo').textContent = text;
+  $('#prevBtn').disabled = !canPrev();
+  $('#nextBtn').disabled = !canNext();
+}
+
+/* ============================================================
+   PAGE NAVIGATION + FLIP ANIMATION
+============================================================ */
+let animating = false;
+
+function canNext(){
+  const nb = currentNotebook();
+  if (!nb) return false;
+  const step = state.mode === 'two' ? 2 : 1;
+  return state.current + step < nb.pages.length;
+}
+function canPrev(){
+  const step = state.mode === 'two' ? 2 : 1;
+  return state.current - step >= 0;
+}
+
+function makeFlipCanvas(pageIndex, pw, ph){
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const c = document.createElement('canvas');
+  c.width = Math.round(pw * dpr);
+  c.height = Math.round(ph * dpr);
+  c.style.width = '100%';
+  c.style.height = '100%';
+  const ctx = c.getContext('2d');
+  renderPageFull(ctx, c.width, c.height, pageIndex);
+  return c;
+}
+
+function flipPage(dir){   // dir: +1 forward, -1 backward
+  if (animating) return;
+  const nb = currentNotebook();
+  if (!nb) return;
+  if (dir > 0 && !canNext()) return;
+  if (dir < 0 && !canPrev()) return;
+
+  const two = state.mode === 'two';
+  const step = two ? 2 : 1;
+  const cur = state.current;
+
+  let frontPage, backPage, newCurrent;
+
+  if (dir > 0){
+    newCurrent = cur + step;
+    if (two){ frontPage = cur + 1; backPage = cur + 2; }
+    else    { frontPage = cur;     backPage = cur + 1; }
+  } else {
+    newCurrent = cur - step;
+    if (two){ frontPage = cur - 1; backPage = cur; }
+    else    { frontPage = cur - 1; backPage = cur; }
+  }
+
+  const f = els.flipper;
+  f.innerHTML = '';
+
+  const front = document.createElement('div'); front.className = 'face front';
+  const back  = document.createElement('div'); back.className  = 'face back';
+  front.appendChild(makeFlipCanvas(frontPage, state.pw, state.ph));
+  back.appendChild(makeFlipCanvas(backPage, state.pw, state.ph));
+  const sh1 = document.createElement('div'); sh1.className = 'shade';
+  const sh2 = document.createElement('div'); sh2.className = 'shade';
+  front.appendChild(sh1); back.appendChild(sh2);
+  f.appendChild(front); f.appendChild(back);
+
+  const startDeg = dir > 0 ? 0 : -180;
+  const endDeg   = dir > 0 ? -180 : 0;
+
+  f.style.display = 'block';
+  f.style.transition = 'none';
+  f.style.transform = `rotateY(${startDeg}deg)`;
+  void f.offsetWidth; // reflow
+
+  animating = true;
+  f.style.transition = 'transform .78s cubic-bezier(.44,.05,.22,1)';
+  f.style.transform = `rotateY(${endDeg}deg)`;
+
+  const done = () => {
+    f.removeEventListener('transitionend', done);
+    state.current = newCurrent;
+    renderSpread();
+    requestAnimationFrame(() => {
+      f.style.transition = 'none';
+      f.style.display = 'none';
+      f.innerHTML = '';
+      animating = false;
+    });
+  };
+  f.addEventListener('transitionend', done);
+  // safety timeout
+  setTimeout(() => { if (animating) done(); }, 950);
+}
+
+function nextPage(){ flipPage(1); }
+function prevPage(){ flipPage(-1); }
+
+/* ============================================================
+   DRAWING ENGINE
+============================================================ */
+let drawing = null;
+const pointers = new Map();
+let gesture = null;
+
+function toNorm(e, canvas){
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: clamp((e.clientX - r.left) / r.width, 0, 1),
+    y: clamp((e.clientY - r.top)  / r.height, 0, 1)
+  };
+}
+
+function computePressure(e, drawing, dist){
+  if (e.pointerType === 'pen' && e.pressure > 0 && e.pressure !== 0.5){
+    return clamp(e.pressure, 0.05, 1);
+  }
+  // velocity-based for finger / mouse
+  const now = performance.now();
+  const dt = Math.max(6, now - (drawing ? drawing.lastTime : now));
+  const speedPx = (dist * 1000) / dt;   // normalised-units per second × 1000
+  let p = clamp(1 - (speedPx - 0.25) * 0.10, 0.34, 1);
+  if (drawing) p = drawing.lastPressure * 0.55 + p * 0.45;
+  return p;
+}
+
+function startStroke(e, canvas){
+  const slot = canvas.__slot;
+  const idx = slot.pageIndex;
+  if (idx < 0) return;
+  const nb = currentNotebook();
+  if (!nb || idx >= nb.pages.length) return;
+
+  const ctx = canvas.getContext('2d');
+  const pt = toNorm(e, canvas);
+
+  const tool = state.tool;
+  const color = tool === 'highlighter' ? state.hlColor : state.penColor;
+
+  const stroke = {
+    tool,
+    color,
+    size: state.sizes[tool] / 1000,
+    points: [{ x: +pt.x.toFixed(4), y: +pt.y.toFixed(4), p: 0.6 }]
+  };
+
+  drawing = {
+    canvas, ctx, slot, pageIndex: idx, stroke,
+    lastPoint: pt,
+    lastTime: performance.now(),
+    lastPressure: 0.6,
+    W: canvas.width, H: canvas.height
+  };
+
+  // draw initial dot
+  drawLiveSegment(drawing, stroke.points[0], stroke.points[0]);
+}
+
+function drawLiveSegment(d, a, b){
+  const ctx = d.ctx, W = d.W, H = d.H, s = d.stroke;
+  const base = s.size * W;
+
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineCap = s.tool === 'highlighter' ? 'butt' : 'round';
+
+  if (s.tool === 'eraser'){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+  } else if (s.tool === 'highlighter'){
+    ctx.globalAlpha = 0.38;
+    ctx.strokeStyle = s.color;
+  } else if (s.tool === 'pencil'){
+    ctx.globalAlpha = 0.82;
+    ctx.strokeStyle = s.color;
+  } else {
+    ctx.strokeStyle = s.color;
+  }
+
+  ctx.beginPath();
+  ctx.lineWidth = Math.max(0.7, base * (0.42 + 0.9 * ((a.p + b.p) / 2)));
+  ctx.moveTo(a.x*W, a.y*H);
+  ctx.lineTo(b.x*W, b.y*H);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function addPoint(e){
+  if (!drawing) return;
+  const pt = toNorm(e, drawing.canvas);
+
+  const dx = pt.x - drawing.lastPoint.x;
+  const dy = pt.y - drawing.lastPoint.y;
+  const dist = Math.hypot(dx, dy);
+  if (dist < 0.0012) return;
+
+  const pressure = computePressure(e, drawing, dist);
+
+  // light smoothing
+  const sx = drawing.lastPoint.x + dx * 0.72;
+  const sy = drawing.lastPoint.y + dy * 0.72;
+
+  const newPt = { x: +sx.toFixed(4), y: +sy.toFixed(4), p: +pressure.toFixed(3) };
+  const prevPt = drawing.stroke.points[drawing.stroke.points.length - 1];
+
+  drawing.stroke.points.push(newPt);
+  drawLiveSegment(drawing, prevPt, newPt);
+
+  drawing.lastPoint = { x: sx, y: sy };
+  drawing.lastTime = performance.now();
+  drawing.lastPressure = pressure;
+}
+
+function endStroke(commit){
+  if (!drawing) return;
+  const d = drawing;
+  drawing = null;
+  if (!commit || d.stroke.points.length === 0) return;
+
+  const nb = currentNotebook();
+  if (!nb) return;
+  const page = nb.pages[d.pageIndex];
+  if (!page) return;
+
+  d.stroke.ts = Date.now();
+  page.strokes.push(d.stroke);
+  redoStack.length = 0;
+  scheduleSave();
+  updateUndoButtons();
+}
+
+function cancelStroke(){
+  if (!drawing) return;
+  const d = drawing;
+  drawing = null;
+  // repaint the ink canvas without the partial stroke
+  const ictx = d.canvas.getContext('2d');
+  ictx.clearRect(0, 0, d.canvas.width, d.canvas.height);
+  const nb = currentNotebook();
+  const page = nb && nb.pages[d.pageIndex];
+  if (page) for (const s of page.strokes) renderStroke(ictx, d.canvas.width, d.canvas.height, s);
+}
+
+/* ---------------- pointer events ---------------- */
+function onDown(e){
+  if (e.target.closest('#topbar, #bottombar, #modal, #exitAppBtn, .ui')) return;
+
+  // Text tool: handled by its own listener; do not start a stroke
+  if (state.tool === 'text') return;
+
+  const ink = e.target.closest('canvas.ink');
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (pointers.size === 1){
+    if (ink){
+      startStroke(e, ink);
+      e.preventDefault();
+    }
+  } else if (pointers.size === 2){
+    // second finger → cancel the stroke, begin pinch-zoom / pan
+    if (drawing) cancelStroke();
+    startGesture();
+    e.preventDefault();
+  }
+}
+
+function onMove(e){
+  if (!pointers.has(e.pointerId)) return;
+  const p = pointers.get(e.pointerId);
+  p.x = e.clientX; p.y = e.clientY;
+
+  if (pointers.size >= 2){
+    if (!gesture) startGesture();
+    updateGesture();
+    e.preventDefault();
+    return;
+  }
+  if (!drawing) return;
+
+  e.preventDefault();
+  const events = (typeof e.getCoalescedEvents === 'function') ? e.getCoalescedEvents() : [e];
+  if (events && events.length){
+    for (const ev of events) addPoint(ev);
+  } else {
+    addPoint(e);
+  }
+}
+
+function onUp(e){
+  if (!pointers.has(e.pointerId)) return;
+  pointers.delete(e.pointerId);
+
+  if (pointers.size < 2 && gesture){
+    gesture = null;
+  }
+  if (pointers.size === 0){
+    if (drawing) endStroke(true);
+  }
+}
+
+function startGesture(){
+  const pts = [...pointers.values()];
+  if (pts.length < 2) return;
+  gesture = {
+    d0: Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1,
+    mx: (pts[0].x + pts[1].x) / 2,
+    my: (pts[0].y + pts[1].y) / 2,
+    zoom0: state.zoom,
+    panX0: state.panX,
+    panY0: state.panY
+  };
+}
+
+function updateGesture(){
+  if (!gesture) return;
+  const pts = [...pointers.values()];
+  if (pts.length < 2) return;
+
+  const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+  const mx = (pts[0].x + pts[1].x) / 2;
+  const my = (pts[0].y + pts[1].y) / 2;
+
+  state.zoom = clamp(gesture.zoom0 * (d / gesture.d0), 0.45, 4);
+  state.panX = gesture.panX0 + (mx - gesture.mx);
+  state.panY = gesture.panY0 + (my - gesture.my);
+  applyTransform();
+}
+
+/* ============================================================
+   TEXT TOOL LOGIC
+============================================================ */
+let activeTextInput = null;
+
+function commitTextInput(){
+  const ta = activeTextInput;
+  if (!ta) return;
+  activeTextInput = null;
+
+   const value = ta.value;
+  const idx = +ta.dataset.pageIndex;
+  const nx = +ta.dataset.nx;
+  const ny = +ta.dataset.ny;
+  const color = ta.dataset.color;
+  const font  = ta.dataset.font || 'sans';
+  const size = +ta.dataset.size;
+  ta.remove();
+
+  const nb = currentNotebook();
+  if (!nb) { renderSpread(); return; }
+  const page = nb.pages[idx];
+  if (!page) { renderSpread(); return; }
+
+        if (value.trim()){
+    page.strokes.push({
+      tool: 'text',
+      text: value,
+      x: nx,
+      y: ny,
+      color,
+      font,
+      size: size / 1000,
+      points: [],
+      ts: Date.now()
+    });
+    redoStack.length = 0;
+    scheduleSave();
+    updateUndoButtons();
+  }
+  renderSpread();
+}
+
+function startTextInput(e, canvas){
+  const slot = canvas.__slot;
+  const idx = slot.pageIndex;
+  if (idx < 0) return;
+  const nb = currentNotebook();
+  if (!nb || idx >= nb.pages.length) return;
+
+  // Commit any in-flight text first
+  if (activeTextInput) commitTextInput();
+
+  const r = canvas.getBoundingClientRect();
+  const x = clamp(e.clientX - r.left, 0, r.width);
+  const y = clamp(e.clientY - r.top, 0, r.height);
+
+   const ta = document.createElement('textarea');
+  ta.className = 'text-input';
+  ta.style.left  = (r.left + x) + 'px';
+  ta.style.top   = (r.top + y) + 'px';
+  ta.style.width = Math.max(140, r.width - x - 6) + 'px';
+  ta.style.height= Math.max(38, Math.min(120, r.height - y - 6)) + 'px';
+
+  const fontDef = FONTS.find(f => f.id === state.textFont) || FONTS[0];
+
+  // canvas.width is in DEVICE px, r.width is in CSS px → ratio = DPR
+  const dpr       = canvas.width / Math.max(1, r.width);
+  const fsCanvas  = Math.max(10, (state.sizes.text || 30) / 1000 * canvas.width);
+  const previewPx = fsCanvas / dpr;
+
+  ta.style.color      = state.textColor;
+  ta.style.fontSize   = previewPx + 'px';
+  ta.style.lineHeight = '1.25';
+  ta.style.fontFamily = fontDef.css;
+  ta.rows = 1;
+  ta.value = '';
+  ta.dataset.pageIndex = idx;
+  ta.dataset.nx = (x / r.width).toFixed(4);
+  ta.dataset.ny = (y / r.height).toFixed(4);
+  ta.dataset.color = state.textColor;
+  ta.dataset.font  = state.textFont;
+  ta.dataset.size  = state.sizes.text || 22;
+
+  document.body.appendChild(ta);
+  ta.focus();
+  activeTextInput = ta;
+
+  ta.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape'){ ev.preventDefault(); commitTextInput(); }
+    if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)){ ev.preventDefault(); commitTextInput(); }
+  });
+  ta.addEventListener('blur', () => {
+    if (activeTextInput === ta) commitTextInput();
+  });
+  ta.addEventListener('input', () => {
+    // grow height with content
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(240, ta.scrollHeight + 6) + 'px';
+  });
+}
+
+// Text tool intercepts drawing on pointerdown
+els.stage.addEventListener('pointerdown', e => {
+  if (state.tool === 'text' && e.target.closest('canvas.ink')){
+    startTextInput(e, e.target.closest('canvas.ink'));
+  }
+}, true);
+
+els.stage.addEventListener('pointerdown', onDown);
+window.addEventListener('pointermove', onMove, { passive: false });
+window.addEventListener('pointerup', onUp);
+window.addEventListener('pointercancel', onUp);
+window.addEventListener('contextmenu', e => { if (e.target.closest('#stage')) e.preventDefault(); });
+
+/* ============================================================
+   FLOATING PEN TRACKING
+============================================================ */
+const floatingPenEl = $('#floatingPen');
+const PEN_TIP_X = 20;   // pen tip inside SVG
+const PEN_TIP_Y = 60;
+
+function movePenTo(x, y, pressed){
+  if (!floatingPenEl) return;
+  const scale = pressed ? 0.92 : 1;
+  floatingPenEl.style.transform =
+    `translate(${x - PEN_TIP_X}px, ${y - PEN_TIP_Y}px) rotate(-38deg) scale(${scale})`;
+}
+function showPenAt(x, y){
+  document.body.classList.add('writing');
+  movePenTo(x, y, false);
+}
+function hideFloatingPen(){
+  document.body.classList.remove('writing');
+}
+
+// show on hover (mouse) — pointerdown also covers touch
+els.stage.addEventListener('pointerover', e => {
+  if (state.tool !== 'text' && e.target.closest('canvas.ink')) showPenAt(e.clientX, e.clientY);
+});
+
+els.stage.addEventListener('pointerdown', e => {
+  if (state.tool !== 'text' && e.target.closest('canvas.ink')){
+    showPenAt(e.clientX, e.clientY);
+    movePenTo(e.clientX, e.clientY, true);
+  }
+}, true);
+
+// move
+els.stage.addEventListener('pointermove', e => {
+  if (document.body.classList.contains('writing')){
+    movePenTo(e.clientX, e.clientY, !!drawing);
+  }
+}, true);
+
+// release
+window.addEventListener('pointerup', e => {
+  if (e.pointerType === 'mouse'){
+    movePenTo(e.clientX, e.clientY, false);
+  } else {
+    hideFloatingPen();
+  }
+});
+
+/* ============================================================
+   ZOOM / PAN
+============================================================ */
+function applyTransform(){
+  els.book.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  $('#zoomLabel').textContent = Math.round(state.zoom * 100) + '%';
+}
+
+let wheelLock = false;
+els.stage.addEventListener('wheel', e => {
+  if (e.ctrlKey || e.metaKey){
+    e.preventDefault();
+    state.zoom = clamp(state.zoom * Math.exp(-e.deltaY * 0.0022), 0.45, 4);
+    applyTransform();
+    return;
+  }
+  e.preventDefault();
+  if (wheelLock) return;
+  wheelLock = true;
+  setTimeout(() => wheelLock = false, 380);
+  if (e.deltaY > 0) nextPage(); else prevPage();
+}, { passive: false });
+
+/* ============================================================
+   UNDO / REDO
+============================================================ */
+const redoStack = [];
+
+function lastStrokeOnVisiblePages(){
+  const nb = currentNotebook();
+  if (!nb) return null;
+  const idxs = state.mode === 'two'
+    ? [state.current, state.current + 1]
+    : [state.current];
+
+  let best = null;
+  idxs.forEach(i => {
+    const page = nb.pages[i];
+    if (!page || !page.strokes.length) return;
+    const s  = page.strokes[page.strokes.length - 1];
+    const ts = s.ts || 0;
+    if (!best || ts > best.ts) best = { pageIndex: i, stroke: s, ts };
+  });
+  return best;
+}
+
+function undo(){
+  const nb = currentNotebook();
+  if (!nb || drawing) return;
+  const target = lastStrokeOnVisiblePages();
+  if (!target){ toast('Nothing to undo'); return; }
+  nb.pages[target.pageIndex].strokes.pop();
+  redoStack.push({ pageIndex: target.pageIndex, stroke: target.stroke });
+  renderSpread();
+  scheduleSave();
+  updateUndoButtons();
+}
+
+function redo(){
+  const nb = currentNotebook();
+  if (!nb || !redoStack.length) return;
+  const item = redoStack.pop();
+  const page = nb.pages[item.pageIndex];
+  if (page) page.strokes.push(item.stroke);
+  renderSpread();
+  scheduleSave();
+  updateUndoButtons();
+}
+
+function updateUndoButtons(){
+  const nb = currentNotebook();
+  const idxs = state.mode === 'two'
+    ? [state.current, state.current + 1]
+    : [state.current];
+  const has = !!nb && idxs.some(i =>
+    nb.pages[i] && nb.pages[i].strokes.length > 0
+  );
+  $('#undoBtn').style.opacity = has ? 1 : 0.4;
+  $('#redoBtn').style.opacity = redoStack.length ? 1 : 0.4;
+}
+
+/* ============================================================
+   TOOLBAR WIRING
+============================================================ */
+function buildToolColors(){
+  const wrap = $('#colors');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  let palette, activeColor, applyColor;
+
+  if (state.tool === 'text'){
+    palette     = TEXT_COLORS;
+    activeColor = state.textColor;
+    applyColor  = c => { state.textColor = c; };
+  } else if (state.tool === 'highlighter'){
+    palette     = HL_COLORS.map(h => h.color);
+    activeColor = state.hlColor;
+    applyColor  = c => { state.hlColor = c; };
+  } else {
+    palette     = PEN_COLORS;
+    activeColor = state.penColor;
+    applyColor  = c => { state.penColor = c; };
+  }
+
+  palette.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c === activeColor ? ' on' : '');
+    s.style.background = c;
+    s.title = c;
+    s.addEventListener('click', () => {
+      applyColor(c);
+      [...wrap.children].forEach(x => x.classList.remove('on'));
+      s.classList.add('on');
+    });
+    wrap.appendChild(s);
+  });
+}
+
+/* Populate the font selector once */
+function buildFontOptions(){
+  const sel = $('#fontSel');
+  if (!sel || sel.dataset.built === '1') return;
+  sel.dataset.built = '1';
+  FONTS.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = f.label;
+    opt.style.fontFamily = f.css;
+    sel.appendChild(opt);
+  });
+  sel.value = state.textFont;
+}
+
+function buildPageColors(){
+  const wrap = $('#pageColors');
+  wrap.innerHTML = '';
+  const nb = currentNotebook();
+  if (!nb) return;
+  PAGE_COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'swatch' + (c === nb.pageColor ? ' on' : '');
+    s.style.background = c;
+    s.style.width = '18px';
+s.style.height = '18px';
+    s.addEventListener('click', () => {
+      nb.pageColor = c;
+      [...wrap.children].forEach(x => x.classList.remove('on'));
+      s.classList.add('on');
+      renderSpread();
+      if (state.appMode) els.stage.style.background = nb.pageColor;
+      scheduleSave();
+    });
+    wrap.appendChild(s);          // ← missing before
+  });                              // ← missing before
+}                                  // ← missing before
+
+const PEN_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><polygon points="18,44 22,44 20,58" fill="#c8c8c8"/><polygon points="19,50 21,50 20,58" fill="#4a4a4a"/><rect x="15" y="6" width="10" height="40" rx="2" fill="#2c3e50"/><rect x="15" y="6" width="3" height="40" fill="#3d566e"/><rect x="15" y="34" width="10" height="12" fill="#c98b3a"/><rect x="15" y="4" width="10" height="4" rx="2" fill="#1a252f"/></svg>';
+
+const PENCIL_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><polygon points="17,42 23,42 20,58" fill="#f0d9b5"/><polygon points="19,50 21,50 20,58" fill="#333"/><rect x="15" y="6" width="10" height="36" fill="#f5c542"/><rect x="15" y="6" width="3" height="36" fill="#fad76e"/><rect x="15" y="4" width="10" height="4" rx="2" fill="#e0a800"/><rect x="14" y="40" width="12" height="4" fill="#d0d0d0"/></svg>';
+
+const HIGHLIGHTER_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><polygon points="15,46 25,46 22,58 18,58" fill="#ffe14d"/><rect x="14" y="30" width="12" height="16" rx="1" fill="#ffe14d"/><rect x="14" y="8" width="12" height="24" rx="2" fill="#3a3a3a"/><rect x="14" y="8" width="3" height="24" fill="#555"/><rect x="15" y="4" width="10" height="5" rx="1" fill="#222"/></svg>';
+
+const ERASER_SVG = '<svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="59" rx="7" ry="2" fill="rgba(0,0,0,.28)"/><rect x="10" y="26" width="20" height="32" rx="3" fill="#f0c8a0"/><rect x="10" y="26" width="20" height="9" fill="#8a6a44"/><rect x="10" y="52" width="20" height="6" fill="#d8b088"/></svg>';
+
+function setTool(t){
+  state.tool = t;
+  document.querySelectorAll('.tb.tool').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
+  $('#sizeRange').value = state.sizes[t] || 22;
+
+  // Rebuild the colour swatches to match the current tool
+  buildToolColors();
+
+  // Show / hide the font dropdown
+  const fontSel = $('#fontSel');
+  if (fontSel){
+    fontSel.style.display = (t === 'text') ? '' : 'none';
+    if (t === 'text') fontSel.value = state.textFont;
+  }
+
+  // Text tool: no floating pen, use I-beam cursor
+  if (t === 'text'){
+    document.body.classList.remove('writing');
+    [els.slotLeft, els.slotRight].forEach(s => s.ink.style.cursor = 'text');
+    return;
+  }
+
+  // swap the floating pen art
+  const pen = $('#floatingPen');
+  if (pen){
+    if (t === 'pencil')           pen.innerHTML = PENCIL_SVG;
+    else if (t === 'highlighter') pen.innerHTML = HIGHLIGHTER_SVG;
+    else if (t === 'eraser')      pen.innerHTML = ERASER_SVG;
+    else                          pen.innerHTML = PEN_SVG;
+  }
+
+  [els.slotLeft, els.slotRight].forEach(s => {
+    s.ink.style.cursor = t === 'eraser' ? 'cell' : 'crosshair';
+  });
+}
+
+document.querySelectorAll('.tb.tool').forEach(b => {
+  b.addEventListener('click', () => setTool(b.dataset.tool));
+});
+
+$('#sizeRange').addEventListener('input', e => {
+  state.sizes[state.tool] = parseFloat(e.target.value);
+});
+
+$('#fontSel').addEventListener('change', e => {
+  state.textFont = e.target.value;
+});
+
+$('#ruleSel').addEventListener('change', e => {
+  const nb = currentNotebook();
+  if (!nb) return;
+  nb.rule = e.target.value;
+  renderSpread();
+  if (state.appMode) els.stage.style.background = nb.pageColor;
+  scheduleSave();
+});
+
+$('#backBtn').addEventListener('click', () => {
+  stopSpeech();
+  if (state.appMode) exitAppMode();
+  persist();
+  renderLibrary();
+  showScreen('library');
+});
+
+$('#nbTitle').addEventListener('blur', e => {
+  const nb = currentNotebook();
+  if (!nb) return;
+  nb.title = (e.target.textContent.trim() || 'Untitled').slice(0, 26);
+  e.target.textContent = nb.title;
+  scheduleSave();
+});
+$('#nbTitle').addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); e.target.blur(); }
+});
+
+$('#modeBtn').addEventListener('click', () => {
+  state.mode = state.mode === 'two' ? 'one' : 'two';
+  $('#modeBtn').textContent = state.mode === 'two' ? '2 PAGE' : '1 PAGE';
+  // keep the current page in view
+  if (state.mode === 'two'){
+    state.current = state.current % 2 === 0 ? state.current : state.current - 1;
+    if (state.current < 0) state.current = 0;
+  }
+  layout();
+  renderSpread();
+  toast(state.mode === 'two' ? 'Two-page view' : 'Single-page view');
+});
+
+$('#zoomIn').addEventListener('click', () => {
+  state.zoom = clamp(state.zoom * 1.25, 0.45, 4); applyTransform();
+});
+$('#zoomOut').addEventListener('click', () => {
+  state.zoom = clamp(state.zoom / 1.25, 0.45, 4); applyTransform();
+});
+
+$('#undoBtn').addEventListener('click', undo);
+$('#redoBtn').addEventListener('click', redo);
+
+$('#prevBtn').addEventListener('click', prevPage);
+$('#nextBtn').addEventListener('click', nextPage);
+
+$('#addPagesBtn').addEventListener('click', () => {
+  const nb = currentNotebook();
+  if (!nb) return;
+  for (let i = 0; i < 20; i++) nb.pages.push({ strokes: [] });
+  renderSpread();
+  scheduleSave();
+  toast('20 pages added');
+});
+
+/* ---- auto page turn ---- */
+let autoTimer = null;
+function setAuto(on){
+  state.auto = on;
+  clearInterval(autoTimer);
+  $('#autoBtn').classList.toggle('on', on);
+  if (on){
+    autoTimer = setInterval(() => {
+      if (!canNext()){ setAuto(false); return; }
+      nextPage();
+    }, state.autoSpeed * 1000);
+    toast('Auto page turn ON');
+  } else {
+    toast('Auto page turn OFF');
+  }
+}
+$('#autoBtn').addEventListener('click', () => setAuto(!state.auto));
+$('#autoBtn').addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const v = prompt('Seconds per page (2 – 30):', state.autoSpeed);
+  if (v){ state.autoSpeed = clamp(parseFloat(v) || 7, 2, 30); if (state.auto) setAuto(true); }
+});
+
+/* ============================================================
+   APP MODE (FULLSCREEN NOTEBOOK)
+============================================================ */
+async function enterAppMode(){
+  state.appMode = true;
+  state.mode = 'two';
+  $('#modeBtn').textContent = '2 PAGE';
+  document.body.classList.add('app-mode');
+  try {
+    if (document.documentElement.requestFullscreen){
+      await document.documentElement.requestFullscreen();
+    }
+  }catch(e){}
+  setTimeout(() => { layout(); renderSpread(); }, 120);
+  toast('Notebook mode — tap ✕ (top-right) to exit');
+}
+
+function exitAppMode(){
+  state.appMode = false;
+  document.body.classList.remove('app-mode');
+  els.stage.style.background = '';
+  if (document.fullscreenElement && document.exitFullscreen){
+    document.exitFullscreen().catch(()=>{});
+  }
+  setTimeout(() => { layout(); renderSpread(); }, 120);
+}
+
+/* ============================================================
+   PRINT / SAVE-AS-PDF
+============================================================ */
+function printNotebook(){
+  const nb = currentNotebook();
+  if (!nb) return;
+  if (!nb.pages.length){ toast('Nothing to print'); return; }
+  toast('Preparing ' + nb.pages.length + ' pages…');
+
+  setTimeout(() => {
+    const old = document.getElementById('printRoot');
+    if (old) old.remove();
+    const root = document.createElement('div');
+    root.id = 'printRoot';
+    document.body.appendChild(root);
+
+    // A4 @ ~100 dpi. Small enough to keep memory low, sharp enough to read
+    const PW = 1000;
+    const PH = 1414;
+
+    nb.pages.forEach((_, i) => {
+      const page = document.createElement('div');
+      page.className = 'print-page';
+
+      const c = document.createElement('canvas');
+      c.width = PW;
+      c.height = PH;
+      const ctx = c.getContext('2d');
+      renderPageFull(ctx, PW, PH, i);
+
+      const img = document.createElement('img');
+      img.src = c.toDataURL('image/jpeg', 0.85);
+      page.appendChild(img);
+      root.appendChild(page);
+    });
+
+    const imgs = root.querySelectorAll('img');
+    if (!imgs.length){ window.print(); return; }
+
+    let loaded = 0;
+    const tryPrint = () => {
+      if (++loaded >= imgs.length){
+        window.print();
+        setTimeout(() => root.remove(), 1500);
+      }
+    };
+    imgs.forEach(img => {
+      if (img.complete) tryPrint();
+      else img.addEventListener('load', tryPrint, { once: true });
+      img.addEventListener('error', tryPrint, { once: true });
+    });
+  }, 80);
+}
+
+$('#printBtn').addEventListener('click', printNotebook);
+
+/* ============================================================
+   TEXT-TO-SPEECH — listen to typed notes
+============================================================ */
+let ttsUtterance = null;
+let ttsSpeaking = false;
+
+function collectSpeakableText(onlyCurrentPage){
+  const nb = currentNotebook();
+  if (!nb) return '';
+  const parts = [];
+  const pageRange = onlyCurrentPage
+    ? (state.mode === 'two' ? [state.current, state.current + 1] : [state.current])
+    : nb.pages.map((_, i) => i);
+
+  parts.push(nb.title + '.');
+  pageRange.forEach(i => {
+    const page = nb.pages[i];
+    if (!page || !page.strokes.length) return;
+    const textChunks = page.strokes
+      .filter(s => s.tool === 'text' && s.text && s.text.trim())
+      .map(s => s.text.trim());
+    if (textChunks.length){
+      parts.push('Page ' + (i + 1) + '. ' + textChunks.join('. '));
+    }
+  });
+  return parts.join(' ');
+}
+
+function speakNotebook(onlyCurrentPage){
+  if (!('speechSynthesis' in window)){
+    toast('Your device does not support speaking');
+    return;
+  }
+  if (ttsSpeaking){
+    window.speechSynthesis.cancel();
+    ttsSpeaking = false;
+    $('#speakBtn').classList.remove('on');
+    return;
+  }
+
+  const text = collectSpeakableText(onlyCurrentPage);
+  if (!text.trim()){
+    toast('Nothing typed yet to listen to');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  ttsUtterance = new SpeechSynthesisUtterance(text);
+  ttsUtterance.rate = 1.0;
+  ttsUtterance.pitch = 1.0;
+  ttsUtterance.volume = 1.0;
+
+  // Prefer a local English voice if available
+  const voices = window.speechSynthesis.getVoices() || [];
+  const preferred =
+       voices.find(v => /en-IN/i.test(v.lang) && /female|google/i.test(v.name))
+    || voices.find(v => /en-IN/i.test(v.lang))
+    || voices.find(v => /en-GB/i.test(v.lang))
+    || voices.find(v => /en/i.test(v.lang))
+    || voices[0];
+  if (preferred) ttsUtterance.voice = preferred;
+  ttsUtterance.lang = (preferred && preferred.lang) || 'en-IN';
+
+  ttsUtterance.onend = () => {
+    ttsSpeaking = false;
+    $('#speakBtn').classList.remove('on');
+  };
+  ttsUtterance.onerror = () => {
+    ttsSpeaking = false;
+    $('#speakBtn').classList.remove('on');
+  };
+
+  ttsSpeaking = true;
+  $('#speakBtn').classList.add('on');
+  window.speechSynthesis.speak(ttsUtterance);
+  toast('Reading your notes aloud…');
+}
+
+$('#speakBtn').addEventListener('click', () => speakNotebook(true));
+$('#speakBtn').addEventListener('contextmenu', e => {
+  e.preventDefault();
+  speakNotebook(false);   // right-click reads the whole notebook
+});
+
+/* Stop speech when leaving studio or starting to write */
+function stopSpeech(){
+  if ('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+  }
+  ttsSpeaking = false;
+  const btn = $('#speakBtn');
+  if (btn) btn.classList.remove('on');
+}
+
+/* ============================================================
+   DRAWER
+============================================================ */
+const USER_KEY = 'realnotebook.user.v1';
+const LOVE_KEY = 'realnotebook.love.count.v1';
+
+function openDrawer(){
+  updateDrawerUser();
+  updateLoveCount();
+  $('#drawer').classList.add('open');
+}
+function closeDrawer(){
+  $('#drawer').classList.remove('open');
+}
+
+$('#drawerBtnTop').addEventListener('click', openDrawer);
+$('#drawerBtnLib').addEventListener('click', openDrawer);
+$('#drawerClose').addEventListener('click', closeDrawer);
+$('#drawerBackdrop').addEventListener('click', closeDrawer);
+
+/* ============================================================
+   LOGIN (localStorage name)
+============================================================ */
+function getUserName(){
+  try { return localStorage.getItem(USER_KEY) || ''; } catch(e){ return ''; }
+}
+function setUserName(name){
+  try {
+    if (name) localStorage.setItem(USER_KEY, name);
+    else localStorage.removeItem(USER_KEY);
+  }catch(e){}
+  updateDrawerUser();
+}
+function updateDrawerUser(){
+  const name = getUserName();
+  const hello = $('#drawerHello');
+  const loginText = $('#drawerLoginText');
+  if (hello) hello.textContent = name ? ('Hello, ' + name + ' 👋') : 'Hello, friend';
+  if (loginText) loginText.textContent = name ? ('Signed in as ' + name) : 'Login';
+}
+$('#drawerLogin').addEventListener('click', () => {
+  const current = getUserName();
+  const name = prompt('Enter your name (leave blank to log out):', current);
+  if (name === null) return;
+  const trimmed = name.trim().slice(0, 26);
+  setUserName(trimmed);
+  toast(trimmed ? ('Welcome, ' + trimmed) : 'Logged out');
+});
+
+/* ============================================================
+   HELP MODAL
+============================================================ */
+$('#drawerHelp').addEventListener('click', () => {
+  closeDrawer();
+  $('#helpModal').classList.add('open');
+});
+
+$('#drawerClear').addEventListener('click', () => {
+  if (!confirm('Delete ALL notebooks and reset the app? This cannot be undone.')) return;
+  try {
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(LOVE_KEY);
+  } catch(e){}
+
+  // Wipe in-memory state, then re-seed defaults — no page reload needed
+  state.notebooks = [];
+  state.currentId = null;
+  state.current = 0;
+  state.mode = 'two';
+  state.zoom = 1; state.panX = 0; state.panY = 0;
+
+  loadAll();       // reseeds Physics / Maths / English
+  renderLibrary();
+  updateDrawerUser();
+  updateLoveCount();
+  closeDrawer();
+  showScreen('library');
+  toast('All data cleared');
+});
+$('#helpClose').addEventListener('click', () => $('#helpModal').classList.remove('open'));
+$('#helpModal').addEventListener('click', e => {
+  if (e.target.id === 'helpModal') $('#helpModal').classList.remove('open');
+});
+
+/* ============================================================
+   EXIT + LOVE PROMPT
+============================================================ */
+function getLoveCount(){
+  try { return +(localStorage.getItem(LOVE_KEY) || 0) || 0; } catch(e){ return 0; }
+}
+function setLoveCount(n){
+  try { localStorage.setItem(LOVE_KEY, String(n)); }catch(e){}
+}
+function updateLoveCount(){
+  const n = getLoveCount();
+  const el = $('#loveCount');
+  if (!el) return;
+  el.textContent = n > 0
+    ? ('❤️ Loved ' + n + (n === 1 ? ' time' : ' times') + ' by you')
+    : '';
+}
+
+function openExitLove(){
+  closeDrawer();
+  updateLoveCount();
+  $('#exitLove').classList.add('open');
+}
+function closeExitLove(){
+  $('#exitLove').classList.remove('open');
+}
+
+$('#drawerExit').addEventListener('click', openExitLove);
+
+$('#loveBtn').addEventListener('click', () => {
+  const n = getLoveCount() + 1;
+  setLoveCount(n);
+  updateLoveCount();
+  toast('Thank you 💛 — keep learning!');
+  closeExitLove();
+});
+
+$('#leaveBtn').addEventListener('click', () => {
+  // Best-effort exit. If window.close() is blocked (normal web), show farewell.
+  const farewell = document.createElement('div');
+  farewell.style.cssText = `
+    position:fixed;inset:0;z-index:2000;background:#14120e;color:#f0e9db;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,
+    "Segoe UI",Roboto,Arial,sans-serif;
+  `;
+  farewell.innerHTML = `
+    <div style="font-size:64px;margin-bottom:14px">🙏</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">Thank you for using this app</div>
+    <div style="font-size:13px;color:#a89e8f;line-height:1.6;max-width:340px">
+      You can now close this tab.<br>
+      Keep learning — your hard work matters.
+    </div>
+    <div style="margin-top:24px;font-size:11px;color:#6f665a;letter-spacing:.5px">
+      Made with ❤️ by DIVY · 9369224174
+    </div>
+  `;
+  document.body.appendChild(farewell);
+  setTimeout(() => { try { window.close(); } catch(e){} }, 300);
+});
+
+/* ============================================================
+   Listen-to-notebook from drawer
+============================================================ */
+$('#drawerListen').addEventListener('click', () => {
+  closeDrawer();
+  setTimeout(() => speakNotebook(false), 120);
+});
+
+$('#appBtn').addEventListener('click', enterAppMode);
+$('#exitAppBtn').addEventListener('click', exitAppMode);
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && state.appMode) exitAppMode();
+});
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+============================================================ */
+window.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toUpperCase();
+  if (e.target.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  const ctrl = e.ctrlKey || e.metaKey;
+
+  if (ctrl && e.key.toLowerCase() === 'z' && !e.shiftKey){ e.preventDefault(); undo(); }
+  else if (ctrl && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))){ e.preventDefault(); redo(); }
+  else if (e.key === 'ArrowRight'){ nextPage(); }
+  else if (e.key === 'ArrowLeft'){ prevPage(); }
+  else if (e.key.toLowerCase() === 'p'){ setTool('pen'); }
+  else if (e.key.toLowerCase() === 'h'){ setTool('highlighter'); }
+  else if (e.key.toLowerCase() === 'e'){ setTool('eraser'); }
+  else if (e.key.toLowerCase() === 'm'){ setTool('pencil'); }
+   else if (e.key === 'Escape'){
+    if ($('#exitLove').classList.contains('open')) closeExitLove();
+    else if ($('#helpModal').classList.contains('open')) $('#helpClose').click();
+    else if ($('#drawer').classList.contains('open')) closeDrawer();
+    else if ($('#modal').classList.contains('open')) $('#mClose').click();
+    else if (state.appMode) exitAppMode();
+  }
+  else if (e.key === 'f' || e.key === 'F'){ state.appMode ? exitAppMode() : enterAppMode(); }
+});
+
+/* ============================================================
+   RESIZE
+============================================================ */
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if ($('#studio').classList.contains('active') && currentNotebook()){
+      layout();
+      renderSpread();
+    }
+  }, 140);
+});
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    if ($('#studio').classList.contains('active') && currentNotebook()){
+      layout(); renderSpread();
+    }
+  }, 320);
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+function init(){
+  loadAll();
+  renderLibrary();
+     buildFontOptions();
+  buildToolColors();
+  setTool('pen');
+  updateDrawerUser();
+  updateLoveCount();
+  // Prime speech voices (some browsers need a nudge)
+  if ('speechSynthesis' in window){
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {};
+  }
+  applyTransform();
+  $('#sizeRange').value = state.sizes.pen;
+
+  // restore last opened notebook
+  if (state.currentId && state.notebooks.some(n => n.id === state.currentId)){
+    // stay on library, just remember
+  }
+  updateUndoButtons();
+}
+
+init();
+</script>
+</body>
+</html>
