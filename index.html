@@ -1201,22 +1201,24 @@ body.writing canvas.ink{ cursor: none; }
         <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
         <div class="sep"></div>
         <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
-        <select class="tbSel" id="ruleSel" title="Page style">
-           <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
-<!-- ADD THESE TWO BUTTONS -->
+        <!-- Font Family & Size Controls -->
+<select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
 <button class="tb small" id="fontDec" title="Decrease font size" style="display:none;">A-</button>
 <button class="tb small" id="fontInc" title="Increase font size" style="display:none;">A+</button>
-          <option value="plain">Plain</option>
-          <option value="lined">Lined</option>
-          <option value="ruled">Ruled + margin</option>
-          <option value="dotted">Dotted</option>
-          <option value="grid">Graph</option>
-          <option value="spiral-left">Spiral notebook (single, left spiral)</option>
-          <option value="spiral-center">Spiral notebook (2-page spread)</option>
-          <option value="upsc-single">UPSC answer sheet (single)</option>
-          <option value="upsc-2page">UPSC answer sheet (2 page)</option>
-          <option value="omr">OMR practice sheet</option>
-        </select>
+
+<!-- Page Style Selector -->
+<select class="tbSel" id="ruleSel" title="Page style">
+  <option value="plain">Plain</option>
+  <option value="lined">Lined</option>
+  <option value="ruled">Ruled + margin</option>
+  <option value="dotted">Dotted</option>
+  <option value="grid">Graph</option>
+  <option value="spiral-left">Spiral notebook (single, left spiral)</option>
+  <option value="spiral-center">Spiral notebook (2-page spread)</option>
+  <option value="upsc-single">UPSC answer sheet (single)</option>
+  <option value="upsc-2page">UPSC answer sheet (2 page)</option>
+  <option value="omr">OMR practice sheet</option>
+</select>
         <div class="sep"></div>
         <button class="tb" id="pageColorBtn" title="Page colour">🎨</button>
         <button class="tb" id="lineStyleBtn" title="Page lines">📏</button>
