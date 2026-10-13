@@ -1170,6 +1170,8 @@ body.writing canvas.ink{ cursor: none; }
 <div class="spacer"></div>
 <input type="search" id="libSearch" placeholder="Search notebooks or typed text…">
 <button class="tb" id="shelfBtn" title="Change almirah style">🪵</button>
+<button class="tb" id="importPdfBtn" title="Import PDF">📄</button>
+<input type="file" id="pdfUpload" accept="application/pdf" style="display:none;">
 <button class="btn primary" id="newBookBtn">+ New Notebook</button>
 <button class="tb" id="drawerBtnLib" title="Menu">⋮</button>
 <div id="searchResults"></div>
@@ -1188,7 +1190,7 @@ body.writing canvas.ink{ cursor: none; }
     <button class="tb" id="drawerBtnTop" title="Menu">⋮</button>
     <div id="nbTitle" contenteditable="true" spellcheck="false">Untitled</div>
     
-    <!-- WRAP DRAWING TOOLS HERE -->
+    <!-- DRAWING TOOLS WRAPPER -->
     <div id="drawingTools" class="tool-group">
         <div class="sep"></div>
         <button class="tb tool" data-tool="pen" title="Pen">🖊️</button>
@@ -1201,7 +1203,7 @@ body.writing canvas.ink{ cursor: none; }
         <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
         <div class="sep"></div>
         
-        <!-- FIXED: Font Family & Size Controls moved OUTSIDE the ruleSel dropdown -->
+        <!-- Font Family & Size Controls -->
         <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
         <button class="tb small" id="fontDec" title="Decrease font size" style="display:none;">A-</button>
         <button class="tb small" id="fontInc" title="Increase font size" style="display:none;">A+</button>
@@ -1226,6 +1228,7 @@ body.writing canvas.ink{ cursor: none; }
     <!-- END WRAP -->
     
     <div class="sep"></div>
+    <button class="tb" id="speakBtn" title="Listen to this notebook">🔊</button> <!-- RESTORED BUTTON -->
     <button class="tb small" id="modeBtn" title="Page view mode">2 PAGE</button>
     <button class="tb" id="zoomOut" title="Zoom out">−</button>
     <span id="zoomLabel">100%</span>
@@ -1428,6 +1431,9 @@ body.writing canvas.ink{ cursor: none; }
     <rect x="15" y="4" width="10" height="4" rx="2" fill="#1a252f"/>
   </svg>
 </div>
+
+<!-- PDF.js Library for PDF Import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 <script>
 "use strict";
@@ -1870,6 +1876,63 @@ function createNotebook(){
   renderLibrary();
   toast('New notebook added to your almirah');
 }
+
+/* ============================================================
+   PDF IMPORT & VIEW
+============================================================ */
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+}
+
+$('#importPdfBtn').addEventListener('click', () => $('#pdfUpload').click());
+
+$('#pdfUpload').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  toast('Reading PDF… This may take a moment.');
+
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    try {
+      const typedarray = new Uint8Array(ev.target.result);
+      const pdf = await pdfjsLib.getDocument(typedarray).promise;
+      const totalPages = pdf.numPages;
+      const pages = [];
+
+      for (let i = 1; i <= totalPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 1.5 }); // 1.5x scale for good quality without huge storage
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
+        
+        pages.push({
+          strokes: [],
+          bgImage: canvas.toDataURL('image/jpeg', 0.7) // Save as JPEG to save space
+        });
+      }
+
+      const nb = newNotebook({ title: file.name.replace('.pdf', ''), pageCount: totalPages });
+      nb.pages = pages; // Override default blank pages
+      nb.rule = 'plain'; // PDFs usually don't need ruling on top
+      
+      state.notebooks.push(nb);
+      persist();
+      renderLibrary();
+      toast('PDF imported successfully!');
+      
+    } catch (err) {
+      console.error(err);
+      toast('Failed to read PDF. It might be too large for storage.');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  e.target.value = ''; // Reset input
+});
 
 /* ============================================================
    COVER MODAL
@@ -2500,10 +2563,19 @@ function renderPageFull(ctx, W, H, idx){
   const nb = currentNotebook();
   if (!nb) return;
   ctx.save();
-  ctx.fillStyle = nb.pageColor;
-  ctx.fillRect(0, 0, W, H);
-  drawRuling(ctx, W, H, nb.rule, 'single');
   const page = nb.pages[idx];
+  
+  if (page && page.bgImage) {
+    const img = new Image();
+    img.src = page.bgImage;
+    // Since this is used for print/flip, we assume it's loaded or will load quickly
+    ctx.drawImage(img, 0, 0, W, H); 
+  } else {
+    ctx.fillStyle = nb.pageColor;
+    ctx.fillRect(0, 0, W, H);
+    drawRuling(ctx, W, H, nb.rule, 'single');
+  }
+  
   if (page) for (const s of page.strokes) renderStroke(ctx, W, H, s);
   ctx.restore();
 }
@@ -2521,14 +2593,26 @@ function drawSlot(slot, idx){
 
   const bctx = bg.getContext('2d');
   bctx.clearRect(0, 0, W, H);
-  bctx.fillStyle = nb.pageColor;
-  bctx.fillRect(0, 0, W, H);
-  drawRuling(bctx, W, H, nb.rule, side);
+  
+  const page = nb.pages[idx];
+  
+  if (page && page.bgImage) {
+    const img = new Image();
+    img.onload = () => {
+      bctx.drawImage(img, 0, 0, W, H);
+    };
+    img.src = page.bgImage;
+  } else {
+    bctx.fillStyle = nb.pageColor;
+    bctx.fillRect(0, 0, W, H);
+    drawRuling(bctx, W, H, nb.rule, side);
+  }
 
   const ictx = ink.getContext('2d');
   ictx.clearRect(0, 0, W, H);
-  const page = nb.pages[idx];
-  if (page) for (const s of page.strokes) renderStroke(ictx, W, H, s);
+  if (page) {
+    for (const s of page.strokes) renderStroke(ictx, W, H, s);
+  }
 
   slot.pageIndex = idx;
   slot.ink.style.cursor = state.tool === 'eraser' ? 'cell' : 'crosshair';
