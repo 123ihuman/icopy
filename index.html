@@ -532,6 +532,41 @@ body.app-mode #exitAppBtn{display:flex;align-items:center;justify-content:center
 #exitAppBtn:hover{opacity:1;transform:scale(1.06);}
 
 /* ============================================================
+   UI TOGGLE MODE (Hide Toolbar)
+============================================================ */
+body.hide-ui #topbar,
+body.hide-ui #bottombar {
+  display: none !important;
+}
+body.hide-ui #stage {
+  /* The stage naturally expands because it's flex: 1 */
+}
+#showUIBtn {
+  position: fixed;
+  top: calc(10px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  z-index: 9999;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.15);
+  background: rgba(255,255,255,.85);
+  color: #333; font-size: 16px; line-height: 1;
+  cursor: pointer;
+  opacity: .35; transition: opacity .25s, transform .25s;
+  display: none; backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  align-items: center; justify-content: center;
+}
+body.hide-ui #showUIBtn {
+  display: flex;
+}
+body.app-mode #showUIBtn {
+  display: none !important;
+}
+#showUIBtn:hover {
+  opacity: 1; transform: scale(1.06);
+}
+
+/* ============================================================
    MODAL
 ============================================================ */
 #modal{
@@ -1178,6 +1213,7 @@ body.writing canvas.ink{ cursor: none; }
     <button class="tb" id="redoBtn" title="Redo">↷</button>
     <button class="tb small" id="autoBtn" title="Auto page turn">AUTO</button>
     <button class="tb" id="printBtn" title="Print / Save as PDF">🖨️</button>
+<button class="tb" id="toggleUIBtn" title="Hide toolbar">👁️</button>
 <button class="tb" id="appBtn" title="Fullscreen notebook">⛶</button>
   </div>
 
@@ -1206,6 +1242,7 @@ body.writing canvas.ink{ cursor: none; }
 </div>
 
 <button id="exitAppBtn" title="Exit notebook mode">✕</button>
+<button id="showUIBtn" title="Show toolbar">👁️</button>
 
 <!-- ================= MODAL ================= -->
 <div id="modal">
@@ -1502,6 +1539,7 @@ const state = {
   textFont: 'sans',
   sizes: { ...DEFAULT_SIZES },
   appMode: false,
+  uiHidden: false,
   auto: false, autoSpeed: 7,
   pw: 400, ph: 560, spine: 6,
   shelfStyle: 'wood'
@@ -2801,7 +2839,7 @@ function cancelStroke(){
 
 /* ---------------- pointer events ---------------- */
 function onDown(e){
-  if (e.target.closest('#topbar, #bottombar, #modal, #exitAppBtn, .ui')) return;
+  if (e.target.closest('#topbar, #bottombar, #modal, #exitAppBtn, #showUIBtn, .ui')) return;
 
   // Text tool: handled by its own listener; do not start a stroke
   if (state.tool === 'text') return;
@@ -3525,6 +3563,21 @@ function exitAppMode(){
 }
 
 /* ============================================================
+   UI TOGGLE (HIDE TOOLBAR)
+============================================================ */
+function toggleUI() {
+  state.uiHidden = !state.uiHidden;
+  document.body.classList.toggle('hide-ui', state.uiHidden);
+  if (state.uiHidden) {
+    toast('Toolbar hidden. Tap 👁️ to show');
+    if (activeTextInput) commitTextInput();
+  }
+}
+
+$('#toggleUIBtn').addEventListener('click', toggleUI);
+$('#showUIBtn').addEventListener('click', toggleUI);
+
+/* ============================================================
    PRINT / SAVE-AS-PDF
 ============================================================ */
 function printNotebook(){
@@ -3855,6 +3908,7 @@ window.addEventListener('keydown', e => {
   else if (e.key.toLowerCase() === 'h'){ setTool('highlighter'); }
   else if (e.key.toLowerCase() === 'e'){ setTool('eraser'); }
   else if (e.key.toLowerCase() === 'm'){ setTool('pencil'); }
+  else if (e.key.toLowerCase() === 'u'){ toggleUI(); }
    else if (e.key === 'Escape'){
     if ($('#exitLove').classList.contains('open')) closeExitLove();
     else if ($('#helpModal').classList.contains('open')) $('#helpClose').click();
