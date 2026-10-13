@@ -34,7 +34,7 @@ button,input,select{font-family:inherit;}
   background:linear-gradient(180deg,rgba(20,18,14,.98),rgba(20,18,14,.75));
   backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);
 }
-   #drawingTools {
+#drawingTools {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1184,7 +1184,7 @@ body.writing canvas.ink{ cursor: none; }
 <div id="studio" class="screen">
   <div id="topbar">
     <button class="tb" id="backBtn" title="Back to almirah">☰</button>
-    <button class="tb" id="toggleToolsBtn" title="Toggle Tools">🍔</button> <!-- NEW BUTTON -->
+    <button class="tb" id="toggleToolsBtn" title="Toggle Tools">🍔</button> 
     <button class="tb" id="drawerBtnTop" title="Menu">⋮</button>
     <div id="nbTitle" contenteditable="true" spellcheck="false">Untitled</div>
     
@@ -1200,30 +1200,31 @@ body.writing canvas.ink{ cursor: none; }
         <div id="colors"></div>
         <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
         <div class="sep"></div>
+        
+        <!-- FIXED: Font Family & Size Controls moved OUTSIDE the ruleSel dropdown -->
         <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
-        <!-- Font Family & Size Controls -->
-<select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
-<button class="tb small" id="fontDec" title="Decrease font size" style="display:none;">A-</button>
-<button class="tb small" id="fontInc" title="Increase font size" style="display:none;">A+</button>
-
-<!-- Page Style Selector -->
-<select class="tbSel" id="ruleSel" title="Page style">
-  <option value="plain">Plain</option>
-  <option value="lined">Lined</option>
-  <option value="ruled">Ruled + margin</option>
-  <option value="dotted">Dotted</option>
-  <option value="grid">Graph</option>
-  <option value="spiral-left">Spiral notebook (single, left spiral)</option>
-  <option value="spiral-center">Spiral notebook (2-page spread)</option>
-  <option value="upsc-single">UPSC answer sheet (single)</option>
-  <option value="upsc-2page">UPSC answer sheet (2 page)</option>
-  <option value="omr">OMR practice sheet</option>
-</select>
+        <button class="tb small" id="fontDec" title="Decrease font size" style="display:none;">A-</button>
+        <button class="tb small" id="fontInc" title="Increase font size" style="display:none;">A+</button>
+        
+        <!-- Page Style Selector -->
+        <select class="tbSel" id="ruleSel" title="Page style">
+          <option value="plain">Plain</option>
+          <option value="lined">Lined</option>
+          <option value="ruled">Ruled + margin</option>
+          <option value="dotted">Dotted</option>
+          <option value="grid">Graph</option>
+          <option value="spiral-left">Spiral notebook (single, left spiral)</option>
+          <option value="spiral-center">Spiral notebook (2-page spread)</option>
+          <option value="upsc-single">UPSC answer sheet (single)</option>
+          <option value="upsc-2page">UPSC answer sheet (2 page)</option>
+          <option value="omr">OMR practice sheet</option>
+        </select>
         <div class="sep"></div>
         <button class="tb" id="pageColorBtn" title="Page colour">🎨</button>
         <button class="tb" id="lineStyleBtn" title="Page lines">📏</button>
     </div>
     <!-- END WRAP -->
+    
     <div class="sep"></div>
     <button class="tb small" id="modeBtn" title="Page view mode">2 PAGE</button>
     <button class="tb" id="zoomOut" title="Zoom out">−</button>
@@ -1234,8 +1235,8 @@ body.writing canvas.ink{ cursor: none; }
     <button class="tb" id="redoBtn" title="Redo">↷</button>
     <button class="tb small" id="autoBtn" title="Auto page turn">AUTO</button>
     <button class="tb" id="printBtn" title="Print / Save as PDF">🖨️</button>
-<button class="tb" id="toggleUIBtn" title="Hide toolbar">👁️</button>
-<button class="tb" id="appBtn" title="Fullscreen notebook">⛶</button>
+    <button class="tb" id="toggleUIBtn" title="Hide toolbar">👁️</button>
+    <button class="tb" id="appBtn" title="Fullscreen notebook">⛶</button>
   </div>
 
   <div id="stage">
@@ -1458,44 +1459,15 @@ const PATTERNS = {
 
 const COVER_COLORS = ['#1e3a8a','#7f1d1d','#14532d','#4c1d95','#78350f','#0f766e','#831843','#1f2937','#b45309','#334155'];
 const PAGE_COLORS = [
-  // Neutrals / real paper
-  '#ffffff',   // white
-  '#fffdf6',   // warm white
-  '#f7f4ec',   // aged ivory
-  '#fdf8e8',   // cream
-  '#f0ece1',   // kraft light
-
-  // Pastel pinks / reds
-  '#fdf2f2',   // rose blush
-  '#fce7f3',   // soft pink
-  '#fbcfe8',   // bubblegum
-  '#fee2e2',   // rose
-
-  // Pastel oranges / yellows
-  '#fef3c7',   // butter yellow
-  '#fde68a',   // sunshine
-  '#fef0e6',   // peach
-
-  // Pastel greens
-  '#eef5f0',   // mint
-  '#dcfce7',   // leaf
-  '#d1fae5',   // aqua green
-  '#ecfccb',   // lime pastel
-
-  // Pastel blues / cyans
-  '#e0f2fe',   // sky
-  '#dbeafe',   // powder blue
-  '#cffafe',   // cyan pastel
-
-  // Pastel purples
-  '#ede9fe',   // lavender
-  '#f5f0ff',   // lilac
-  '#f3e8ff',   // violet mist
-
-  // Slight tinted tints
-  '#fef2f2',   // very light coral
-  '#f0f9ff',   // ice blue
+  '#ffffff', '#fffdf6', '#f7f4ec', '#fdf8e8', '#f0ece1',
+  '#fdf2f2', '#fce7f3', '#fbcfe8', '#fee2e2',
+  '#fef3c7', '#fde68a', '#fef0e6',
+  '#eef5f0', '#dcfce7', '#d1fae5', '#ecfccb',
+  '#e0f2fe', '#dbeafe', '#cffafe',
+  '#ede9fe', '#f5f0ff', '#f3e8ff',
+  '#fef2f2', '#f0f9ff',
 ];
+
 /* Expanded Pen Colors */
 const PEN_COLORS = [
   '#152a5c','#111111','#b91c1c','#166534','#1d4ed8','#7c3aed','#b45309','#db2777',
@@ -1528,7 +1500,7 @@ const HL_COLORS = [
   { name:'Periwinkle', color:'#c7d2fe' },
   { name:'Plum',     color:'#e9d5ff' },
 ];
-/* 17 famous fonts — Indian students use all of these */
+
 const FONTS = [
   { id:'sans',      label:'Sans (default)',  css:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif' },
   { id:'serif',     label:'Serif',           css:'Georgia,"Times New Roman",serif' },
@@ -1550,6 +1522,7 @@ const FONTS = [
 ];
 
 const DEFAULT_SIZES = { pen: 2.6, pencil: 2.2, highlighter: 17, eraser: 26, text: 30 };
+
 /* ============================================================
    STATE
 ============================================================ */
@@ -1595,13 +1568,13 @@ function persist(){
 let saveTimer = null;
 function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(persist, 600); }
 
-// Flush any pending save if the tab is closed quickly
 window.addEventListener('beforeunload', () => {
   if (saveTimer){ clearTimeout(saveTimer); persist(); }
 });
 window.addEventListener('pagehide', () => {
   if (saveTimer){ clearTimeout(saveTimer); persist(); }
 });
+
 function newNotebook(opts = {}){
   const n = opts.pageCount || 40;
   const pages = [];
@@ -1614,8 +1587,8 @@ function newNotebook(opts = {}){
     photo: null,
     pageColor: opts.pageColor || '#fffdf6',
     rule: opts.rule || 'ruled',
-    ruleLines: opts.ruleLines || 26,     // how many horizontal lines per page
-    ruleColor: opts.ruleColor || null,   // null = use default colour for the rule style
+    ruleLines: opts.ruleLines || 26,     
+    ruleColor: opts.ruleColor || null,   
     pages,
     createdAt: Date.now()
   };
@@ -1632,7 +1605,7 @@ function loadAll(){
     }
   }catch(e){ console.warn(e); }
 
-    if (!state.notebooks.length){
+  if (!state.notebooks.length){
     state.notebooks.push(newNotebook({ title:'Physics', cover:'#1e3a8a', pattern:'lines', rule:'ruled',  pageColor:'#fffdf6', pageCount:12 }));
     state.notebooks.push(newNotebook({ title:'Maths',   cover:'#7f1d1d', pattern:'plain', rule:'grid',   pageColor:'#fffef9', pageCount:12 }));
     state.notebooks.push(newNotebook({ title:'English', cover:'#14532d', pattern:'dots',  rule:'lined',  pageColor:'#fdf8e8', pageCount:12 }));
@@ -1678,6 +1651,7 @@ function renderLibrary(){
     wrap.appendChild(row);
   }
 }
+
 /* ============================================================
    ALMIRAH NAME
 ============================================================ */
@@ -1715,6 +1689,7 @@ $('#brandName').addEventListener('click', () => {
     toast('Reset to "My Almirah"');
   }
 });
+
 /* ============================================================
    ALMIRAH SHELF STYLE
 ============================================================ */
@@ -1745,7 +1720,6 @@ function buildShelfGrid(){
 
     const prev = document.createElement('div');
     prev.className = 'shelf-preview';
-    // apply the same CSS variables so the mini-preview matches the real shelf
     prev.classList.add(s.cls);
 
     const label = document.createElement('div');
@@ -1780,7 +1754,11 @@ $('#shelfClose').addEventListener('click', closeShelfModal);
 $('#shelfModal').addEventListener('click', e => {
   if (e.target.id === 'shelfModal') closeShelfModal();
 });
-   $('#fontInc').addEventListener('click', () => {
+
+/* ============================================================
+   FONT SIZE CONTROLS
+============================================================ */
+$('#fontInc').addEventListener('click', () => {
   state.sizes.text = clamp(state.sizes.text + 2, 10, 80);
   if (state.tool === 'text') $('#sizeRange').value = state.sizes.text;
 });
@@ -1825,11 +1803,9 @@ function searchAll(q){
   const hits = [];
 
   state.notebooks.forEach(nb => {
-    // Match on notebook title
     if (nb.title.toLowerCase().includes(query)){
       hits.push({ nbId: nb.id, page: 0, type: 'title', title: nb.title, sub: 'Notebook' });
     }
-    // Match on typed text inside pages
     nb.pages.forEach((page, pIdx) => {
       page.strokes.forEach(s => {
         if (s.tool === 'text' && String(s.text || '').toLowerCase().includes(query)){
@@ -2038,14 +2014,11 @@ function layout(){
   let pw, ph, spine;
 
   if (state.appMode){
-    // ===== FULLSCREEN MODE: stretch pages to fill 100% of the screen =====
     spine = state.mode === 'two' ? Math.max(2, Math.round(availW * 0.006)) : 0;
     pw = (availW - spine) / cols;
     ph = availH;
-    // Blend page colour into stage so nothing dark shows around edges
     els.stage.style.background = nb.pageColor;
   } else {
-    // ===== NORMAL MODE: keep A4 ratio =====
     spine = state.mode === 'two' ? Math.max(5, Math.round(availH * 0.015)) : 0;
     ph = Math.min(availH, 980);
     pw = ph * ratio;
@@ -2080,10 +2053,6 @@ function resizeSlot(slot, pw, ph){
 }
 
 /* ---------------- page rendering ---------------- */
-/* ============================================================
-   PAGE TEMPLATE RENDERERS (Indian school / UPSC / OMR styles)
-============================================================ */
-
 function alphaHex(hex, a){
   const c = hex.replace('#','');
   const r = parseInt(c.substring(0,2),16);
@@ -2153,7 +2122,6 @@ function paintSpiral(ctx, W, H, side){
   const ringH = Math.min(gap * 0.72, 16);
   const ringOffset = Math.max(6, W * 0.016);
 
-  // Soft shadow strip running along the spine
   const gradW = ringOffset + ringW * 0.7;
   const grad = side === 'left'
     ? ctx.createLinearGradient(0, 0, gradW, 0)
@@ -2164,7 +2132,6 @@ function paintSpiral(ctx, W, H, side){
   if (side === 'left') ctx.fillRect(0, 0, gradW, H);
   else                 ctx.fillRect(W - gradW, 0, gradW, H);
 
-  // Perforation dot line (small tear-off dots on paper)
   ctx.fillStyle = 'rgba(120,100,80,0.35)';
   const perfX = baseX + dir * (ringOffset * 1.55);
   for (let i = 0; i < holes * 4; i++){
@@ -2177,14 +2144,12 @@ function paintSpiral(ctx, W, H, side){
   for (let i = 0; i < holes; i++){
     const cy = gap * (i + 0.5);
 
-    // Dark hole in the paper
     ctx.beginPath();
     ctx.fillStyle = 'rgba(50,40,30,0.62)';
     ctx.ellipse(baseX + dir * ringOffset * 0.7, cy,
                 ringW * 0.20, ringH * 0.60, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Metal ring outer stroke
     ctx.strokeStyle = '#2a2a2a';
     ctx.lineWidth = Math.max(1.3, W / 420);
     ctx.beginPath();
@@ -2192,7 +2157,6 @@ function paintSpiral(ctx, W, H, side){
                 ringW * 0.78, ringH * 0.50, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Highlight arc
     ctx.strokeStyle = 'rgba(255,255,255,0.55)';
     ctx.lineWidth = Math.max(0.6, W / 750);
     ctx.beginPath();
@@ -2201,7 +2165,6 @@ function paintSpiral(ctx, W, H, side){
                 Math.PI * 0.85, Math.PI * 1.65);
     ctx.stroke();
 
-    // Shadow under ring
     ctx.beginPath();
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
     ctx.ellipse(baseX + dir * ringOffset * 0.55, cy + ringH * 0.68,
@@ -2226,13 +2189,11 @@ function paintDatePageBox(ctx, W, H, color){
 
   const half = bh / 2;
 
-  // Horizontal divider (top row "Date", bottom row "Page No.")
   ctx.beginPath();
   ctx.moveTo(bx, by + half);
   ctx.lineTo(bx + bw, by + half);
   ctx.stroke();
 
-  // Vertical divider inside bottom row
   ctx.beginPath();
   ctx.moveTo(bx + bw * 0.40, by + half);
   ctx.lineTo(bx + bw * 0.40, by + bh);
@@ -2258,27 +2219,22 @@ function paintUPSCFrame(ctx, W, H, isRightSide){
   ctx.fillStyle = '#111';
   ctx.lineWidth = Math.max(1.4, W / 320);
 
-  // Outer frame
   ctx.strokeRect(m, m, W - 2*m, H - 2*m);
 
-  // Header divider
   ctx.beginPath();
   ctx.moveTo(m, lineTop); ctx.lineTo(W - m, lineTop);
   ctx.stroke();
 
-  // Left question-number box
   const leftBoxX = m + W * 0.13;
   ctx.beginPath();
   ctx.moveTo(leftBoxX, m); ctx.lineTo(leftBoxX, lineTop);
   ctx.stroke();
 
-  // Right label box
   const rightBoxX = W - m - W * 0.19;
   ctx.beginPath();
   ctx.moveTo(rightBoxX, m); ctx.lineTo(rightBoxX, lineTop);
   ctx.stroke();
 
-  // Horizontal split inside each side box
   ctx.beginPath();
   ctx.moveTo(m, m + headerH * 0.55); ctx.lineTo(leftBoxX, m + headerH * 0.55);
   ctx.stroke();
@@ -2286,13 +2242,11 @@ function paintUPSCFrame(ctx, W, H, isRightSide){
   ctx.moveTo(rightBoxX, m + headerH * 0.55); ctx.lineTo(W - m, m + headerH * 0.55);
   ctx.stroke();
 
-  // Title — U.P.S.C.
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `bold ${Math.max(22, W * 0.105)}px Georgia, "Times New Roman", serif`;
   ctx.fillText('U.P.S.C.', (leftBoxX + rightBoxX) / 2, m + headerH * 0.52);
 
-  // Small labels
   const fs = Math.max(6.5, W * 0.016);
   ctx.font = `${fs}px Arial, sans-serif`;
   ctx.textAlign = 'left';
@@ -2304,7 +2258,6 @@ function paintUPSCFrame(ctx, W, H, isRightSide){
   ctx.fillText('For Practice Use Only', W - m - 3, m + headerH * 0.28);
   ctx.fillText('Total Pages  32', W - m - 3, m + headerH * 0.78);
 
-  // Bottom "End of Answer"
   ctx.textAlign = 'center';
   ctx.font = `italic ${Math.max(7, W * 0.018)}px Arial, sans-serif`;
   ctx.fillText('— End of Answer —', W / 2, H - m - H * 0.020);
@@ -2319,13 +2272,11 @@ function paintOMR(ctx, W, H){
   ctx.fillStyle = '#111';
   ctx.lineWidth = Math.max(1, W / 500);
 
-  // Title
   ctx.font = `bold ${Math.max(10, W * 0.026)}px Arial, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   ctx.fillText('SAMPLE OMR SHEET FOR PRACTICE', W / 2, m);
 
-  // Name box
   const topY = m + H * 0.045;
   const nameH = H * 0.050;
   ctx.strokeRect(m, topY, W * 0.60, nameH);
@@ -2335,7 +2286,6 @@ function paintOMR(ctx, W, H){
   ctx.textBaseline = 'middle';
   ctx.fillText('NAME OF CANDIDATE (IN CAPITAL LETTERS)', m + 6, topY + nameH * 0.5);
 
-  // Class + Roll boxes to the right
   const infoX = m + W * 0.62;
   const infoW = W - infoX - m;
   const infoH = nameH / 2 - 1;
@@ -2345,7 +2295,6 @@ function paintOMR(ctx, W, H){
     ctx.fillText(lab, infoX + 4, y + infoH * 0.5);
   });
 
-  // Bubble grid
   const gridTop = topY + nameH + H * 0.045;
   const gridBottom = H - m - H * 0.08;
   const gridH = gridBottom - gridTop;
@@ -2359,7 +2308,6 @@ function paintOMR(ctx, W, H){
   const rowH = gridH / rows;
   const rad = Math.min(colW * 0.28, rowH * 0.30);
 
-  // Column headers
   ctx.font = `bold ${Math.max(7, W * 0.017)}px Arial, sans-serif`;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#c76aa0';
@@ -2367,7 +2315,6 @@ function paintOMR(ctx, W, H){
     ctx.fillText(String(c + 1), gridLeft + colW * (c + 0.5), gridTop - rowH * 0.55);
   }
 
-  // Rows of bubbles
   for (let rIdx = 0; rIdx < rows; rIdx++){
     const y = gridTop + rowH * (rIdx + 0.5);
 
@@ -2386,7 +2333,6 @@ function paintOMR(ctx, W, H){
     }
   }
 
-  // Footer instructions
   ctx.fillStyle = '#111';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
@@ -2397,9 +2343,6 @@ function paintOMR(ctx, W, H){
   ctx.restore();
 }
 
-/* ============================================================
-   THE DISPATCHER — called by every slot & flip
-============================================================ */
 function drawRuling(ctx, W, H, style, side){
   side = side || 'single';
   ctx.save();
@@ -2431,7 +2374,6 @@ function drawRuling(ctx, W, H, style, side){
       paintGrid(ctx, W, H, lines);
       break;
 
-    /* ---- Indian spiral notebook, pink ruled (Image 6) ---- */
     case 'spiral-left':
       paintHorizontalLines(ctx, W, H, custom || '#c05375', 0.55, lines);
       paintMarginLine(ctx, W, H, custom || '#e078a0', 0.17);
@@ -2441,19 +2383,17 @@ function drawRuling(ctx, W, H, style, side){
       }
       break;
 
-    /* ---- Spiral two-page spread, blue ruled (Image 5) ---- */
     case 'spiral-center':
       paintHorizontalLines(ctx, W, H, custom || '#4a7fc1', 0.45, lines);
       paintMarginLine(ctx, W, H, custom || '#6aa0dc', 0.20);
       paintDatePageBox(ctx, W, H, custom || '#4a7fc1');
       if (side === 'left'){
-        paintSpiral(ctx, W, H, 'right');   // spine sits at centre
+        paintSpiral(ctx, W, H, 'right');   
       } else if (side === 'single'){
         paintSpiral(ctx, W, H, 'left');
       }
       break;
 
-    /* ---- UPSC answer sheet, single page (Image 3) ---- */
     case 'upsc-single':
       paintUPSCFrame(ctx, W, H, false);
       if (side === 'single' || side === 'left'){
@@ -2461,7 +2401,6 @@ function drawRuling(ctx, W, H, style, side){
       }
       break;
 
-    /* ---- UPSC answer sheet, 2-page spread (Image 4) ---- */
     case 'upsc-2page':
       paintUPSCFrame(ctx, W, H, side === 'right');
       if (side === 'left'){
@@ -2471,7 +2410,6 @@ function drawRuling(ctx, W, H, style, side){
       }
       break;
 
-    /* ---- OMR practice sheet (Image 7) ---- */
     case 'omr':
       paintOMR(ctx, W, H);
       break;
@@ -2483,9 +2421,9 @@ function drawRuling(ctx, W, H, style, side){
 
   ctx.restore();
 }
+
 function renderStroke(ctx, W, H, s){
-  // --- TEXT objects ---
-      if (s.tool === 'text'){
+  if (s.tool === 'text'){
     ctx.save();
     ctx.fillStyle = s.color;
     ctx.textBaseline = 'top';
@@ -2632,9 +2570,6 @@ function updatePageInfo(){
   $('#nextBtn').disabled = !canNext();
 }
 
-/* ============================================================
-   PAGE NAVIGATION + FLIP ANIMATION
-============================================================ */
 let animating = false;
 
 function canNext(){
@@ -2660,7 +2595,7 @@ function makeFlipCanvas(pageIndex, pw, ph){
   return c;
 }
 
-function flipPage(dir){   // dir: +1 forward, -1 backward
+function flipPage(dir){   
   if (animating) return;
   if (activeTextInput) commitTextInput();
   const nb = currentNotebook();
@@ -2702,7 +2637,7 @@ function flipPage(dir){   // dir: +1 forward, -1 backward
   f.style.display = 'block';
   f.style.transition = 'none';
   f.style.transform = `rotateY(${startDeg}deg)`;
-  void f.offsetWidth; // reflow
+  void f.offsetWidth; 
 
   animating = true;
   f.style.transition = 'transform .78s cubic-bezier(.44,.05,.22,1)';
@@ -2720,16 +2655,12 @@ function flipPage(dir){   // dir: +1 forward, -1 backward
     });
   };
   f.addEventListener('transitionend', done);
-  // safety timeout
   setTimeout(() => { if (animating) done(); }, 950);
 }
 
 function nextPage(){ flipPage(1); }
 function prevPage(){ flipPage(-1); }
 
-/* ============================================================
-   DRAWING ENGINE
-============================================================ */
 let drawing = null;
 const pointers = new Map();
 let gesture = null;
@@ -2746,10 +2677,9 @@ function computePressure(e, drawing, dist){
   if (e.pointerType === 'pen' && e.pressure > 0 && e.pressure !== 0.5){
     return clamp(e.pressure, 0.05, 1);
   }
-  // velocity-based for finger / mouse
   const now = performance.now();
   const dt = Math.max(6, now - (drawing ? drawing.lastTime : now));
-  const speedPx = (dist * 1000) / dt;   // normalised-units per second × 1000
+  const speedPx = (dist * 1000) / dt;   
   let p = clamp(1 - (speedPx - 0.25) * 0.10, 0.34, 1);
   if (drawing) p = drawing.lastPressure * 0.55 + p * 0.45;
   return p;
@@ -2783,7 +2713,6 @@ function startStroke(e, canvas){
     W: canvas.width, H: canvas.height
   };
 
-  // draw initial dot
   drawLiveSegment(drawing, stroke.points[0], stroke.points[0]);
 }
 
@@ -2827,7 +2756,6 @@ function addPoint(e){
 
   const pressure = computePressure(e, drawing, dist);
 
-  // light smoothing
   const sx = drawing.lastPoint.x + dx * 0.72;
   const sy = drawing.lastPoint.y + dy * 0.72;
 
@@ -2864,7 +2792,6 @@ function cancelStroke(){
   if (!drawing) return;
   const d = drawing;
   drawing = null;
-  // repaint the ink canvas without the partial stroke
   const ictx = d.canvas.getContext('2d');
   ictx.clearRect(0, 0, d.canvas.width, d.canvas.height);
   const nb = currentNotebook();
@@ -2872,11 +2799,9 @@ function cancelStroke(){
   if (page) for (const s of page.strokes) renderStroke(ictx, d.canvas.width, d.canvas.height, s);
 }
 
-/* ---------------- pointer events ---------------- */
 function onDown(e){
   if (e.target.closest('#topbar, #bottombar, #modal, #exitAppBtn, #showUIBtn, .ui')) return;
 
-  // Text tool: handled by its own listener; do not start a stroke
   if (state.tool === 'text') return;
 
   const ink = e.target.closest('canvas.ink');
@@ -2888,7 +2813,6 @@ function onDown(e){
       e.preventDefault();
     }
   } else if (pointers.size === 2){
-    // second finger → cancel the stroke, begin pinch-zoom / pan
     if (drawing) cancelStroke();
     startGesture();
     e.preventDefault();
@@ -2957,9 +2881,6 @@ function updateGesture(){
   applyTransform();
 }
 
-/* ============================================================
-   TEXT TOOL LOGIC
-============================================================ */
 let activeTextInput = null;
 
 function commitTextInput(){
@@ -2967,7 +2888,7 @@ function commitTextInput(){
   if (!ta) return;
   activeTextInput = null;
 
-   const value = ta.value;
+  const value = ta.value;
   const idx = +ta.dataset.pageIndex;
   const nx = +ta.dataset.nx;
   const ny = +ta.dataset.ny;
@@ -2981,7 +2902,7 @@ function commitTextInput(){
   const page = nb.pages[idx];
   if (!page) { renderSpread(); return; }
 
-        if (value.trim()){
+  if (value.trim()){
     page.strokes.push({
       tool: 'text',
       text: value,
@@ -3007,14 +2928,13 @@ function startTextInput(e, canvas){
   const nb = currentNotebook();
   if (!nb || idx >= nb.pages.length) return;
 
-  // Commit any in-flight text first
   if (activeTextInput) commitTextInput();
 
   const r = canvas.getBoundingClientRect();
   const x = clamp(e.clientX - r.left, 0, r.width);
   const y = clamp(e.clientY - r.top, 0, r.height);
 
-   const ta = document.createElement('textarea');
+  const ta = document.createElement('textarea');
   ta.className = 'text-input';
   ta.style.left  = (r.left + x) + 'px';
   ta.style.top   = (r.top + y) + 'px';
@@ -3023,7 +2943,6 @@ function startTextInput(e, canvas){
 
   const fontDef = FONTS.find(f => f.id === state.textFont) || FONTS[0];
 
-  // canvas.width is in DEVICE px, r.width is in CSS px → ratio = DPR
   const dpr       = canvas.width / Math.max(1, r.width);
   const fsCanvas  = Math.max(10, (state.sizes.text || 30) / 1000 * canvas.width);
   const previewPx = fsCanvas / dpr;
@@ -3053,13 +2972,11 @@ function startTextInput(e, canvas){
     if (activeTextInput === ta) commitTextInput();
   });
   ta.addEventListener('input', () => {
-    // grow height with content
     ta.style.height = 'auto';
     ta.style.height = Math.min(240, ta.scrollHeight + 6) + 'px';
   });
 }
 
-// Text tool intercepts drawing on pointerdown
 els.stage.addEventListener('pointerdown', e => {
   if (state.tool === 'text' && e.target.closest('canvas.ink')){
     startTextInput(e, e.target.closest('canvas.ink'));
@@ -3072,11 +2989,8 @@ window.addEventListener('pointerup', onUp);
 window.addEventListener('pointercancel', onUp);
 window.addEventListener('contextmenu', e => { if (e.target.closest('#stage')) e.preventDefault(); });
 
-/* ============================================================
-   FLOATING PEN TRACKING
-============================================================ */
 const floatingPenEl = $('#floatingPen');
-const PEN_TIP_X = 20;   // pen tip inside SVG
+const PEN_TIP_X = 20;   
 const PEN_TIP_Y = 60;
 
 function movePenTo(x, y, pressed){
@@ -3093,7 +3007,6 @@ function hideFloatingPen(){
   document.body.classList.remove('writing');
 }
 
-// show on hover (mouse) — pointerdown also covers touch
 els.stage.addEventListener('pointerover', e => {
   if (state.tool !== 'text' && e.target.closest('canvas.ink')) showPenAt(e.clientX, e.clientY);
 });
@@ -3105,14 +3018,12 @@ els.stage.addEventListener('pointerdown', e => {
   }
 }, true);
 
-// move
 els.stage.addEventListener('pointermove', e => {
   if (document.body.classList.contains('writing')){
     movePenTo(e.clientX, e.clientY, !!drawing);
   }
 }, true);
 
-// release
 window.addEventListener('pointerup', e => {
   if (e.pointerType === 'mouse'){
     movePenTo(e.clientX, e.clientY, false);
@@ -3121,9 +3032,6 @@ window.addEventListener('pointerup', e => {
   }
 });
 
-/* ============================================================
-   ZOOM / PAN
-============================================================ */
 function applyTransform(){
   els.book.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
   $('#zoomLabel').textContent = Math.round(state.zoom * 100) + '%';
@@ -3144,9 +3052,6 @@ els.stage.addEventListener('wheel', e => {
   if (e.deltaY > 0) nextPage(); else prevPage();
 }, { passive: false });
 
-/* ============================================================
-   UNDO / REDO
-============================================================ */
 const redoStack = [];
 
 function lastStrokeOnVisiblePages(){
@@ -3202,9 +3107,6 @@ function updateUndoButtons(){
   $('#redoBtn').style.opacity = redoStack.length ? 1 : 0.4;
 }
 
-/* ============================================================
-   TOOLBAR WIRING
-============================================================ */
 function buildToolColors(){
   const wrap = $('#colors');
   if (!wrap) return;
@@ -3240,7 +3142,6 @@ function buildToolColors(){
   });
 }
 
-/* Populate the font selector once */
 function buildFontOptions(){
   const sel = $('#fontSel');
   if (!sel || sel.dataset.built === '1') return;
@@ -3318,9 +3219,6 @@ $('#pageColorBtn').addEventListener('click', openColorPanel);
 $('#colorPanelClose').addEventListener('click', closeColorPanel);
 $('#colorPanelBackdrop').addEventListener('click', closeColorPanel);
 
-/* ============================================================
-   PAGE LINES PANEL — spacing + colour
-============================================================ */
 const LINE_COLORS = [
   { name:'Default', color:null },
   { name:'Blue',    color:'#5c82bf' },
@@ -3349,7 +3247,6 @@ function buildLineColorGrid(){
     tile.className = 'color-tile' + (isActive ? ' on' : '');
 
     if (lc.color === null){
-      // "Default" — diagonal stripes to say "auto per template"
       tile.style.background = '#5c82bf';
       tile.style.backgroundImage =
         'linear-gradient(45deg,' +
@@ -3430,27 +3327,23 @@ function setTool(t){
   document.querySelectorAll('.tb.tool').forEach(b => b.classList.toggle('on', b.dataset.tool === t));
   $('#sizeRange').value = state.sizes[t] || 22;
 
-  // Rebuild the colour swatches to match the current tool
   buildToolColors();
 
-  // Show / hide the font dropdown
   const fontSel = $('#fontSel');
-const fontDec = $('#fontDec');
-const fontInc = $('#fontInc');
-const isText = (t === 'text');
-if (fontSel) fontSel.style.display = isText ? '' : 'none';
-if (fontDec) fontDec.style.display = isText ? '' : 'none';
-if (fontInc) fontInc.style.display = isText ? '' : 'none';
-if (isText && fontSel) fontSel.value = state.textFont;
+  const fontDec = $('#fontDec');
+  const fontInc = $('#fontInc');
+  const isText = (t === 'text');
+  if (fontSel) fontSel.style.display = isText ? '' : 'none';
+  if (fontDec) fontDec.style.display = isText ? '' : 'none';
+  if (fontInc) fontInc.style.display = isText ? '' : 'none';
+  if (isText && fontSel) fontSel.value = state.textFont;
 
-  // Text tool: no floating pen, use I-beam cursor
   if (t === 'text'){
     document.body.classList.remove('writing');
     [els.slotLeft, els.slotRight].forEach(s => s.ink.style.cursor = 'text');
     return;
   }
 
-  // swap the floating pen art
   const pen = $('#floatingPen');
   if (pen){
     if (t === 'pencil')           pen.innerHTML = PENCIL_SVG;
@@ -3507,7 +3400,6 @@ $('#nbTitle').addEventListener('keydown', e => {
 $('#modeBtn').addEventListener('click', () => {
   state.mode = state.mode === 'two' ? 'one' : 'two';
   $('#modeBtn').textContent = state.mode === 'two' ? '2 PAGE' : '1 PAGE';
-  // keep the current page in view
   if (state.mode === 'two'){
     state.current = state.current % 2 === 0 ? state.current : state.current - 1;
     if (state.current < 0) state.current = 0;
@@ -3520,9 +3412,11 @@ $('#modeBtn').addEventListener('click', () => {
 $('#zoomIn').addEventListener('click', () => {
   state.zoom = clamp(state.zoom * 1.25, 0.45, 4); applyTransform();
 });
-   $('#toggleToolsBtn').addEventListener('click', () => {
+
+$('#toggleToolsBtn').addEventListener('click', () => {
   $('#drawingTools').classList.toggle('hidden');
 });
+
 $('#zoomOut').addEventListener('click', () => {
   state.zoom = clamp(state.zoom / 1.25, 0.45, 4); applyTransform();
 });
@@ -3542,7 +3436,6 @@ $('#addPagesBtn').addEventListener('click', () => {
   toast('20 pages added');
 });
 
-/* ---- auto page turn ---- */
 let autoTimer = null;
 function setAuto(on){
   state.auto = on;
@@ -3565,9 +3458,6 @@ $('#autoBtn').addEventListener('contextmenu', e => {
   if (v){ state.autoSpeed = clamp(parseFloat(v) || 7, 2, 30); if (state.auto) setAuto(true); }
 });
 
-/* ============================================================
-   APP MODE (FULLSCREEN NOTEBOOK)
-============================================================ */
 async function enterAppMode(){
   state.appMode = true;
   state.mode = 'two';
@@ -3603,9 +3493,6 @@ function exitAppMode(){
   setTimeout(() => { layout(); renderSpread(); }, 120);
 }
 
-/* ============================================================
-   UI TOGGLE (HIDE TOOLBAR)
-============================================================ */
 function toggleUI() {
   state.uiHidden = !state.uiHidden;
   document.body.classList.toggle('hide-ui', state.uiHidden);
@@ -3618,9 +3505,6 @@ function toggleUI() {
 $('#toggleUIBtn').addEventListener('click', toggleUI);
 $('#showUIBtn').addEventListener('click', toggleUI);
 
-/* ============================================================
-   PRINT / SAVE-AS-PDF
-============================================================ */
 function printNotebook(){
   const nb = currentNotebook();
   if (!nb) return;
@@ -3634,7 +3518,6 @@ function printNotebook(){
     root.id = 'printRoot';
     document.body.appendChild(root);
 
-    // A4 @ ~100 dpi. Small enough to keep memory low, sharp enough to read
     const PW = 1000;
     const PH = 1414;
 
@@ -3674,9 +3557,6 @@ function printNotebook(){
 
 $('#printBtn').addEventListener('click', printNotebook);
 
-/* ============================================================
-   TEXT-TO-SPEECH — listen to typed notes
-============================================================ */
 let ttsUtterance = null;
 let ttsSpeaking = false;
 
@@ -3726,7 +3606,6 @@ function speakNotebook(onlyCurrentPage){
   ttsUtterance.pitch = 1.0;
   ttsUtterance.volume = 1.0;
 
-  // Prefer a local English voice if available
   const voices = window.speechSynthesis.getVoices() || [];
   const preferred =
        voices.find(v => /en-IN/i.test(v.lang) && /female|google/i.test(v.name))
@@ -3755,10 +3634,9 @@ function speakNotebook(onlyCurrentPage){
 $('#speakBtn').addEventListener('click', () => speakNotebook(true));
 $('#speakBtn').addEventListener('contextmenu', e => {
   e.preventDefault();
-  speakNotebook(false);   // right-click reads the whole notebook
+  speakNotebook(false);   
 });
 
-/* Stop speech when leaving studio or starting to write */
 function stopSpeech(){
   if ('speechSynthesis' in window){
     window.speechSynthesis.cancel();
@@ -3768,9 +3646,6 @@ function stopSpeech(){
   if (btn) btn.classList.remove('on');
 }
 
-/* ============================================================
-   DRAWER
-============================================================ */
 const USER_KEY = 'realnotebook.user.v1';
 const LOVE_KEY = 'realnotebook.love.count.v1';
 
@@ -3788,9 +3663,6 @@ $('#drawerBtnLib').addEventListener('click', openDrawer);
 $('#drawerClose').addEventListener('click', closeDrawer);
 $('#drawerBackdrop').addEventListener('click', closeDrawer);
 
-/* ============================================================
-   LOGIN (localStorage name)
-============================================================ */
 function getUserName(){
   try { return localStorage.getItem(USER_KEY) || ''; } catch(e){ return ''; }
 }
@@ -3817,9 +3689,6 @@ $('#drawerLogin').addEventListener('click', () => {
   toast(trimmed ? ('Welcome, ' + trimmed) : 'Logged out');
 });
 
-/* ============================================================
-   HELP MODAL
-============================================================ */
 $('#drawerHelp').addEventListener('click', () => {
   closeDrawer();
   $('#helpModal').classList.add('open');
@@ -3834,8 +3703,7 @@ $('#drawerClear').addEventListener('click', () => {
     localStorage.removeItem(BRAND_KEY);
   } catch(e){}
 
-  // Wipe in-memory state, then re-seed defaults — no page reload needed
-   state.notebooks = [];
+  state.notebooks = [];
   state.currentId = null;
   state.current = 0;
   state.mode = 'two';
@@ -3844,7 +3712,7 @@ $('#drawerClear').addEventListener('click', () => {
   applyShelfStyle();
   applyAlmirahName();
 
-  loadAll();       // reseeds Physics / Maths / English
+  loadAll();       
   renderLibrary();
   updateDrawerUser();
   updateLoveCount();
@@ -3857,9 +3725,6 @@ $('#helpModal').addEventListener('click', e => {
   if (e.target.id === 'helpModal') $('#helpModal').classList.remove('open');
 });
 
-/* ============================================================
-   EXIT + LOVE PROMPT
-============================================================ */
 function getLoveCount(){
   try { return +(localStorage.getItem(LOVE_KEY) || 0) || 0; } catch(e){ return 0; }
 }
@@ -3895,7 +3760,6 @@ $('#loveBtn').addEventListener('click', () => {
 });
 
 $('#leaveBtn').addEventListener('click', () => {
-  // Best-effort exit. If window.close() is blocked (normal web), show farewell.
   const farewell = document.createElement('div');
   farewell.style.cssText = `
     position:fixed;inset:0;z-index:2000;background:#14120e;color:#f0e9db;
@@ -3918,9 +3782,6 @@ $('#leaveBtn').addEventListener('click', () => {
   setTimeout(() => { try { window.close(); } catch(e){} }, 300);
 });
 
-/* ============================================================
-   Listen-to-notebook from drawer
-============================================================ */
 $('#drawerListen').addEventListener('click', () => {
   closeDrawer();
   setTimeout(() => speakNotebook(false), 120);
@@ -3933,9 +3794,6 @@ document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && state.appMode) exitAppMode();
 });
 
-/* ============================================================
-   KEYBOARD SHORTCUTS
-============================================================ */
 window.addEventListener('keydown', e => {
   const tag = (e.target.tagName || '').toUpperCase();
   if (e.target.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
@@ -3960,9 +3818,6 @@ window.addEventListener('keydown', e => {
   else if (e.key === 'f' || e.key === 'F'){ state.appMode ? exitAppMode() : enterAppMode(); }
 });
 
-/* ============================================================
-   RESIZE
-============================================================ */
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
@@ -3982,30 +3837,25 @@ window.addEventListener('orientationchange', () => {
   }, 320);
 });
 
-/* ============================================================
-   INIT
-============================================================ */
 function init(){
   loadAll();
   renderLibrary();
-     buildFontOptions();
+  buildFontOptions();
   buildToolColors();
   setTool('pen');
   updateDrawerUser();
   updateLoveCount();
-  // Prime speech voices (some browsers need a nudge)
   if ('speechSynthesis' in window){
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => {};
   }
-   applyTransform();
+  applyTransform();
   $('#sizeRange').value = state.sizes.pen;
 
-  // restore last opened notebook
   if (state.currentId && state.notebooks.some(n => n.id === state.currentId)){
     // stay on library, just remember
   }
-   applyShelfStyle();
+  applyShelfStyle();
   applyAlmirahName();
   updateUndoButtons();
 }
