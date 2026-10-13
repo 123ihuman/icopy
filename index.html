@@ -34,6 +34,16 @@ button,input,select{font-family:inherit;}
   background:linear-gradient(180deg,rgba(20,18,14,.98),rgba(20,18,14,.75));
   backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);
 }
+   #drawingTools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  transition: opacity 0.2s;
+}
+#drawingTools.hidden {
+  display: none !important;
+}
 .brand{font-size:19px;font-weight:700;letter-spacing:.3px;min-width:0;max-width:220px;}
 .brand .brand-name{
   display:block;
@@ -1174,35 +1184,44 @@ body.writing canvas.ink{ cursor: none; }
 <div id="studio" class="screen">
   <div id="topbar">
     <button class="tb" id="backBtn" title="Back to almirah">☰</button>
+    <button class="tb" id="toggleToolsBtn" title="Toggle Tools">🍔</button> <!-- NEW BUTTON -->
     <button class="tb" id="drawerBtnTop" title="Menu">⋮</button>
-    <button class="tb" id="speakBtn" title="Listen to this notebook">🔊</button>
     <div id="nbTitle" contenteditable="true" spellcheck="false">Untitled</div>
-    <div class="sep"></div>
-    <button class="tb tool" data-tool="pen" title="Pen">🖊️</button>
-    <button class="tb tool" data-tool="pencil" title="Pencil">✏️</button>
-    <button class="tb tool" data-tool="highlighter" title="Highlighter">🖍️</button>
-    <button class="tb tool" data-tool="eraser" title="Eraser">🧽</button>
-<button class="tb tool" data-tool="text" title="Type text">T</button>
-    <div class="sep"></div>
-    <div id="colors"></div>
-    <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
-    <div class="sep"></div>
-    <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
-<select class="tbSel" id="ruleSel" title="Page style">
-  <option value="plain">Plain</option>
-  <option value="lined">Lined</option>
-  <option value="ruled">Ruled + margin</option>
-  <option value="dotted">Dotted</option>
-  <option value="grid">Graph</option>
-  <option value="spiral-left">Spiral notebook (single, left spiral)</option>
-  <option value="spiral-center">Spiral notebook (2-page spread)</option>
-  <option value="upsc-single">UPSC answer sheet (single)</option>
-  <option value="upsc-2page">UPSC answer sheet (2 page)</option>
-  <option value="omr">OMR practice sheet</option>
-</select>
-            <div class="sep"></div>
-    <button class="tb" id="pageColorBtn" title="Page colour">🎨</button>
-    <button class="tb" id="lineStyleBtn" title="Page lines">📏</button>
+    
+    <!-- WRAP DRAWING TOOLS HERE -->
+    <div id="drawingTools" class="tool-group">
+        <div class="sep"></div>
+        <button class="tb tool" data-tool="pen" title="Pen">🖊️</button>
+        <button class="tb tool" data-tool="pencil" title="Pencil">✏️</button>
+        <button class="tb tool" data-tool="highlighter" title="Highlighter">🖍️</button>
+        <button class="tb tool" data-tool="eraser" title="Eraser">🧽</button>
+        <button class="tb tool" data-tool="text" title="Type text">T</button>
+        <div class="sep"></div>
+        <div id="colors"></div>
+        <input type="range" id="sizeRange" min="1" max="60" step="1" title="Stroke size">
+        <div class="sep"></div>
+        <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
+        <select class="tbSel" id="ruleSel" title="Page style">
+           <select class="tbSel" id="fontSel" title="Font family" style="display:none;"></select>
+<!-- ADD THESE TWO BUTTONS -->
+<button class="tb small" id="fontDec" title="Decrease font size" style="display:none;">A-</button>
+<button class="tb small" id="fontInc" title="Increase font size" style="display:none;">A+</button>
+          <option value="plain">Plain</option>
+          <option value="lined">Lined</option>
+          <option value="ruled">Ruled + margin</option>
+          <option value="dotted">Dotted</option>
+          <option value="grid">Graph</option>
+          <option value="spiral-left">Spiral notebook (single, left spiral)</option>
+          <option value="spiral-center">Spiral notebook (2-page spread)</option>
+          <option value="upsc-single">UPSC answer sheet (single)</option>
+          <option value="upsc-2page">UPSC answer sheet (2 page)</option>
+          <option value="omr">OMR practice sheet</option>
+        </select>
+        <div class="sep"></div>
+        <button class="tb" id="pageColorBtn" title="Page colour">🎨</button>
+        <button class="tb" id="lineStyleBtn" title="Page lines">📏</button>
+    </div>
+    <!-- END WRAP -->
     <div class="sep"></div>
     <button class="tb small" id="modeBtn" title="Page view mode">2 PAGE</button>
     <button class="tb" id="zoomOut" title="Zoom out">−</button>
@@ -1475,23 +1494,21 @@ const PAGE_COLORS = [
   '#fef2f2',   // very light coral
   '#f0f9ff',   // ice blue
 ];
-const PEN_COLORS   = ['#152a5c','#111111','#b91c1c','#166534','#1d4ed8','#7c3aed','#b45309','#db2777'];
-
-/* 10 colours students actually use for exam writing */
-const TEXT_COLORS  = [
-  '#111111',  // black
-  '#152a5c',  // deep blue (school ink)
-  '#1d4ed8',  // royal blue
-  '#0f766e',  // teal
-  '#166534',  // green
-  '#b45309',  // brown (fountain ink)
-  '#b91c1c',  // red (for corrections / headings)
-  '#7c3aed',  // violet
-  '#db2777',  // pink
-  '#475569',  // slate grey
+/* Expanded Pen Colors */
+const PEN_COLORS = [
+  '#152a5c','#111111','#b91c1c','#166534','#1d4ed8','#7c3aed','#b45309','#db2777',
+  '#0ea5e9','#14b8a6','#f59e0b','#ef4444','#ec4899','#8b5cf6','#a3e635','#64748b',
+  '#000000','#ffffff'
 ];
 
-/* 6 highlighter colours — yellow, green, pink, cyan, orange, lavender */
+/* Expanded Text Colors */
+const TEXT_COLORS = [
+  '#111111','#152a5c','#1d4ed8','#0f766e','#166534','#b45309','#b91c1c','#7c3aed',
+  '#db2777','#475569','#0ea5e9','#14b8a6','#f59e0b','#ef4444','#ec4899','#8b5cf6',
+  '#a3e635','#64748b','#000000','#ffffff'
+];
+
+/* Expanded Highlighter Colors */
 const HL_COLORS = [
   { name:'Yellow',   color:'#ffe14d' },
   { name:'Green',    color:'#a7f3a7' },
@@ -1499,8 +1516,16 @@ const HL_COLORS = [
   { name:'Cyan',     color:'#8ee4f5' },
   { name:'Orange',   color:'#ffb877' },
   { name:'Lavender', color:'#c4b5fd' },
+  { name:'Mint',     color:'#a7f3d0' },
+  { name:'Peach',    color:'#fecaca' },
+  { name:'Lemon',    color:'#fef08a' },
+  { name:'Sky',      color:'#bae6fd' },
+  { name:'Rose',     color:'#fbcfe8' },
+  { name:'Lime',     color:'#d9f99d' },
+  { name:'Coral',    color:'#fca5a5' },
+  { name:'Periwinkle', color:'#c7d2fe' },
+  { name:'Plum',     color:'#e9d5ff' },
 ];
-
 /* 17 famous fonts — Indian students use all of these */
 const FONTS = [
   { id:'sans',      label:'Sans (default)',  css:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif' },
@@ -1752,6 +1777,14 @@ $('#shelfBtn').addEventListener('click', openShelfModal);
 $('#shelfClose').addEventListener('click', closeShelfModal);
 $('#shelfModal').addEventListener('click', e => {
   if (e.target.id === 'shelfModal') closeShelfModal();
+});
+   $('#fontInc').addEventListener('click', () => {
+  state.sizes.text = clamp(state.sizes.text + 2, 10, 80);
+  if (state.tool === 'text') $('#sizeRange').value = state.sizes.text;
+});
+$('#fontDec').addEventListener('click', () => {
+  state.sizes.text = clamp(state.sizes.text - 2, 10, 80);
+  if (state.tool === 'text') $('#sizeRange').value = state.sizes.text;
 });
 
 function bookEl(nb){
@@ -3400,10 +3433,13 @@ function setTool(t){
 
   // Show / hide the font dropdown
   const fontSel = $('#fontSel');
-  if (fontSel){
-    fontSel.style.display = (t === 'text') ? '' : 'none';
-    if (t === 'text') fontSel.value = state.textFont;
-  }
+const fontDec = $('#fontDec');
+const fontInc = $('#fontInc');
+const isText = (t === 'text');
+if (fontSel) fontSel.style.display = isText ? '' : 'none';
+if (fontDec) fontDec.style.display = isText ? '' : 'none';
+if (fontInc) fontInc.style.display = isText ? '' : 'none';
+if (isText && fontSel) fontSel.value = state.textFont;
 
   // Text tool: no floating pen, use I-beam cursor
   if (t === 'text'){
@@ -3481,6 +3517,9 @@ $('#modeBtn').addEventListener('click', () => {
 
 $('#zoomIn').addEventListener('click', () => {
   state.zoom = clamp(state.zoom * 1.25, 0.45, 4); applyTransform();
+});
+   $('#toggleToolsBtn').addEventListener('click', () => {
+  $('#drawingTools').classList.toggle('hidden');
 });
 $('#zoomOut').addEventListener('click', () => {
   state.zoom = clamp(state.zoom / 1.25, 0.45, 4); applyTransform();
